@@ -1,6 +1,7 @@
 
 import './App.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import { AuthProvider } from './context/AuthContext';
@@ -49,6 +50,7 @@ function App() {
             <Route path='/forms/:slug/published' element={<PublishSuccessPage />} />
 
           </Routes>
+          <VercelAnalytics />
         </ThemeProvider>
       </AuthProvider>
     </Router>
