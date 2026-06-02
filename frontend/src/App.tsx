@@ -16,6 +16,7 @@ import UserHome from './pages/UserHome';
 import FormResponses from './pages/FormResponses';
 import ResponseDetails from './pages/ResponseDetails';
 import CompleteProfile from './pages/CompleteProfile';
+import ProtectedRoute from './components/ProtectedRoute';
 
 
 
@@ -32,17 +33,20 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
-            <Route path='/complete-profile' element={<CompleteProfile />} />
 
-            <Route element={<MainLayout />}>
-              <Route path="/home" element={<UserHome />} />
-              <Route path='/create-form' element={<CreateForm />} />
-              <Route path='/dashboard' element={<Dashboard />} />
-              <Route path='/forms' element={<Dashboard />} />
-              <Route path='/analytics' element={<Analytics />} />
-              <Route path='/settings' element={<Settings />} />
-              <Route path='/forms/:slug/responses' element={<FormResponses />} />
-              <Route path='/forms/:slug/responses/:responseId' element={<ResponseDetails />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path='/complete-profile' element={<CompleteProfile />} />
+
+              <Route element={<MainLayout />}>
+                <Route path="/home" element={<UserHome />} />
+                <Route path='/create-form' element={<CreateForm />} />
+                <Route path='/dashboard' element={<Dashboard />} />
+                <Route path='/forms' element={<Dashboard />} />
+                <Route path='/analytics' element={<Analytics />} />
+                <Route path='/settings' element={<Settings />} />
+                <Route path='/forms/:slug/responses' element={<FormResponses />} />
+                <Route path='/forms/:slug/responses/:responseId' element={<ResponseDetails />} />
+              </Route>
             </Route>
 
             <Route path='/forms/:slug' element={<ResponsePage />} />

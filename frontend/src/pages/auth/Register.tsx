@@ -1,10 +1,10 @@
 import React, { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { registerUser } from "../../api/auth";
+import { loginWithGoogle, registerUser } from "../../api/auth";
 import { useAuth } from "../../context/AuthContext";
 import Input from "../../components/Input";
 import thoughtfulGirl from "../../assets/open-doodles-reading-side.gif";
-import googleIcon from "../../assets/google-color-icon.svg";
+import GoogleAuthButton from "../../components/GoogleAuthButton";
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -40,6 +40,13 @@ const Register: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleSuccess = async (accessToken: string) => {
+    setError("");
+    const res = await loginWithGoogle(accessToken);
+    login(res.data.token, res.data.user);
+    navigate("/home");
   };
 
   return (
@@ -149,13 +156,7 @@ const Register: React.FC = () => {
             </div>
 
             { }
-            <button
-              type="button"
-              className="flex w-full items-center justify-center rounded-md border border-gray-300 dark:border-gray-600 py-2.5 font-semibold text-gray-700 dark:text-gray-300 transition hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <img src={googleIcon} alt="Google" className="mr-2 h-5 w-5" />
-              Continue with Google
-            </button>
+            <GoogleAuthButton onSuccess={handleGoogleSuccess} onError={setError} />
 
             { }
             <div className="text-center text-sm text-gray-500">
