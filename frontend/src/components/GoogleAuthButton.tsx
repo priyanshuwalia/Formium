@@ -1,5 +1,6 @@
 import { useState } from "react";
 import googleIcon from "../assets/google-color-icon.svg";
+import { Loader2 } from "lucide-react";
 
 type GoogleTokenResponse = {
   access_token?: string;
@@ -113,7 +114,7 @@ const GoogleAuthButton = ({ onSuccess, onError }: GoogleAuthButtonProps) => {
       className="flex w-full items-center justify-center rounded-md border border-gray-300 dark:border-gray-600 py-2.5 font-semibold text-gray-700 dark:text-gray-300 transition hover:bg-gray-100 dark:hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-70"
     >
       <img src={googleIcon} alt="Google" className="mr-2 h-5 w-5" />
-      {loading ? "Connecting..." : "Continue with Google"}
+      {loading ? <Loader2 className="animate-spin h-5 w-5" /> : "Continue with Google"}
     </button>
   );
 };
