@@ -1,7 +1,7 @@
 import * as FormService from "./form.service.js";
 export const createFormHandler = async (req, res) => {
     try {
-        const form = await FormService.createForm(req.body);
+        const form = await FormService.createForm({ ...req.body, userId: req.user.id });
         res.status(201).json(form);
     }
     catch (err) {

@@ -19,3 +19,13 @@ export const login = async (req, res) => {
         res.status(401).json({ error: err.message });
     }
 };
+export const googleLogin = async (req, res) => {
+    try {
+        const { accessToken } = req.body;
+        const result = await AuthService.googleLogin(accessToken);
+        res.json(result);
+    }
+    catch (err) {
+        res.status(401).json({ error: err.message });
+    }
+};

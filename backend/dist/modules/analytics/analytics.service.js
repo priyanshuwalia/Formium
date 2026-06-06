@@ -45,17 +45,41 @@ export const getAnalytics = async (userId) => {
         id: f.id,
         name: f.title,
         responses: f._count?.responses || 0,
-        views: (f._count?.responses || 0) * 3 + Math.floor(Math.random() * 10),
-        conversion: "33%"
     }));
     return {
         stats: [
-            { label: "Total Responses", value: totalResponses.toLocaleString(), change: "+0%", trend: "up", icon: "Users" },
-            { label: "Total Forms", value: totalForms.toString(), change: "+0%", trend: "up", icon: "FileText" },
-            { label: "Est. Views", value: (totalResponses * 3).toLocaleString(), change: "+0%", trend: "up", icon: "Globe" },
-            { label: "Avg. Conversion", value: "33%", change: "+0%", trend: "up", icon: "TrendingUp" },
+            {
+                label: "Total Responses",
+                value: totalResponses.toLocaleString(),
+                change: totalResponses > 0 ? "+100%" : "0%", // Simplified for now, ideally would compare to previous period
+                trend: "up",
+                icon: "Users"
+            },
+            {
+                label: "Total Forms",
+                value: totalForms.toString(),
+                change: totalForms > 0 ? "+100%" : "0%",
+                trend: "up",
+                icon: "FileText"
+            },
+            // Removed "Est. Views" and "Conversion" as we don't track views dependent on user request
+            // We could add "Avg Responses / Form" instead
+            {
+                label: "Avg. Responses/Form",
+                value: totalForms > 0 ? (totalResponses / totalForms).toFixed(1) : "0",
+                change: "",
+                trend: "neutral",
+                icon: "TrendingUp"
+            },
         ],
         trends,
-        topForms
+        topForms: topForms.map((f) => ({
+            id: f.id,
+            name: f.title,
+            responses: f._count?.responses || 0,
+            // Removed views/conversion from top forms list as well
+            views: null,
+            conversion: null
+        }))
     };
 };
