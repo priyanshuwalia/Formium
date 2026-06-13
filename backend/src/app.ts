@@ -21,7 +21,7 @@ app.use(
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome To FormBuddy API" });
+  res.json({ message: "Welcome To Formium API" });
 });
 
 app.get("/ping", (req, res) => {
