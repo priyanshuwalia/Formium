@@ -59,13 +59,13 @@ Build Formium from the source and install dependencies:
 1.  **Clone the repository:**
 
     ```sh
-    git clone https://github.com/priyanshuwalia/FormBuddy
+    git clone https://github.com/priyanshuwalia/Formium
     ```
 
 2.  **Navigate to the project directory:**
 
     ```sh
-    cd Formbuddy
+    cd Formium
     ```
 
 3.  **Install the dependencies:**
