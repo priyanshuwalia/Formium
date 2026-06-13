@@ -1,5 +1,5 @@
 <div align="center">
-  <h1 align="center">FORMBUDDY</h1>
+  <h1 align="center">Formium</h1>
   <p align="center">
     Empower Creativity, Simplify Form Building Effectively
   </p>
@@ -37,7 +37,7 @@
 
 ## Overview
 
-Formbuddy is a powerful and intuitive tool designed to streamline the process of creating and managing forms. Whether you're building a simple contact form or a complex survey, Formbuddy provides the features and flexibility you need to get the job done efficiently. Our goal is to empower developers and creators by simplifying form building.
+Formium is a powerful and intuitive tool designed to streamline the process of creating and managing forms. Whether you're building a simple contact form or a complex survey, Formium provides the features and flexibility you need to get the job done efficiently. Our goal is to empower developers and creators by simplifying form building.
 
 ---
 
@@ -54,7 +54,7 @@ This project requires the following dependencies:
 
 ### Installation
 
-Build Formbuddy from the source and install dependencies:
+Build Formium from the source and install dependencies:
 
 1.  **Clone the repository:**
 

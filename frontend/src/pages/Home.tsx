@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
@@ -23,7 +22,7 @@ import {
   Webhook,
   Share2,
   ShieldCheck,
-  Globe
+  Globe,
 } from "lucide-react";
 import thoughtfulGirl from "../assets/open-doodles-reading-side.gif";
 import Logo from "../components/Logo";
@@ -46,39 +45,44 @@ export default function Home() {
   const [demoInput, setDemoInput] = useState("");
   const [showDemoMenu, setShowDemoMenu] = useState(false);
   const [demoHighlight, setDemoHighlight] = useState(0);
-  const [demoBlocks, setDemoBlocks] = useState<{ type: string, text: string }[]>([]);
+  const [demoBlocks, setDemoBlocks] = useState<
+    { type: string; text: string }[]
+  >([]);
 
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
 
     const runAnimation = async () => {
       // 1. Reset
-      await new Promise(r => timeout = setTimeout(r, 1000));
+      await new Promise((r) => (timeout = setTimeout(r, 1000)));
       setDemoInput("/");
       setShowDemoMenu(true);
 
       // 2. Select Heading
-      await new Promise(r => timeout = setTimeout(r, 800));
+      await new Promise((r) => (timeout = setTimeout(r, 800)));
       setDemoHighlight(1); // Heading
 
-      await new Promise(r => timeout = setTimeout(r, 600));
+      await new Promise((r) => (timeout = setTimeout(r, 600)));
       setShowDemoMenu(false);
       setDemoInput("");
-      setDemoBlocks([{ type: "Heading 1", text: "Welcome to FormBuddy" }]);
+      setDemoBlocks([{ type: "Heading 1", text: "Welcome to Formium" }]);
 
       // 3. Type text
-      await new Promise(r => timeout = setTimeout(r, 800));
+      await new Promise((r) => (timeout = setTimeout(r, 800)));
       setDemoInput("/");
       setShowDemoMenu(true);
       setDemoHighlight(0); // Text (default)
 
-      await new Promise(r => timeout = setTimeout(r, 800));
+      await new Promise((r) => (timeout = setTimeout(r, 800)));
       setShowDemoMenu(false);
       setDemoInput("");
-      setDemoBlocks(prev => [...prev, { type: "Text", text: "Please fill out the details below." }]);
+      setDemoBlocks((prev) => [
+        ...prev,
+        { type: "Text", text: "Please fill out the details below." },
+      ]);
 
       // 4. Clear after delay
-      await new Promise(r => timeout = setTimeout(r, 3000));
+      await new Promise((r) => (timeout = setTimeout(r, 3000)));
       setDemoBlocks([]);
       setDemoHighlight(0);
 
@@ -97,7 +101,7 @@ export default function Home() {
           setIsVisible(true);
         }
       },
-      { threshold: 0.2 } // Trigger when 20% visible
+      { threshold: 0.2 }, // Trigger when 20% visible
     );
 
     if (insightsRef.current) {
@@ -109,8 +113,10 @@ export default function Home() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setChartHeights(prev => prev.map(() => Math.floor(Math.random() * 60) + 30));
-      setTotalResponses(prev => prev + Math.floor(Math.random() * 10) + 2);
+      setChartHeights((prev) =>
+        prev.map(() => Math.floor(Math.random() * 60) + 30),
+      );
+      setTotalResponses((prev) => prev + Math.floor(Math.random() * 10) + 2);
       setGrowthRate(() => Math.floor(Math.random() * 10) + 10);
       setConversionRate(() => 40 + Math.random() * 5);
       setAvgTime(() => 80 + Math.floor(Math.random() * 10));
@@ -119,17 +125,16 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-black font-inter selection:bg-indigo-500/20">
-
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Logo size={32} />
-            <span className="text-xl font-bold text-gray-900 dark:text-white">FormBuddy</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-white">
+              Formium
+            </span>
           </div>
 
           <div className="flex items-center gap-4">
@@ -204,7 +209,7 @@ export default function Home() {
 
           <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-500 dark:text-gray-400 leading-relaxed mb-10">
             Create intelligent, conversation-style forms without the clutter.
-            Focus on the content, and let FormBuddy handle the experience.
+            Focus on the content, and let Formium handle the experience.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -231,7 +236,6 @@ export default function Home() {
       <section className="py-24 px-6 bg-white dark:bg-black">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-
             {/* 1. Slash Commands (Large, Dark) */}
             <div className="md:col-span-2 group relative p-8 rounded-3xl bg-gray-900 border border-gray-800 overflow-hidden hover:shadow-2xl hover:shadow-indigo-500/20 transition-all duration-300">
               <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-indigo-500/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
@@ -241,8 +245,14 @@ export default function Home() {
                   <div className="w-12 h-12 rounded-2xl bg-gray-800 flex items-center justify-center text-indigo-400 mb-4">
                     <TerminalSquare size={24} />
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Slash Commands</h3>
-                  <p className="text-gray-400 max-w-md">Just type <span className="text-indigo-400 font-mono">/</span> to access any block. No menus, no dragging.</p>
+                  <h3 className="text-2xl font-bold text-white mb-2">
+                    Slash Commands
+                  </h3>
+                  <p className="text-gray-400 max-w-md">
+                    Just type{" "}
+                    <span className="text-indigo-400 font-mono">/</span> to
+                    access any block. No menus, no dragging.
+                  </p>
                 </div>
 
                 {/* Dynamic Demo UI */}
@@ -250,12 +260,20 @@ export default function Home() {
                   {/* Added Blocks */}
                   <div className="space-y-4 mb-4 flex-1">
                     {demoBlocks.map((block, i) => (
-                      <div key={i} className="animate-in slide-in-from-bottom-2 fade-in duration-300">
+                      <div
+                        key={i}
+                        className="animate-in slide-in-from-bottom-2 fade-in duration-300"
+                      >
                         {block.type === "Heading 1" ? (
-                          <h4 className="text-xl font-bold text-white border-l-4 border-indigo-500 pl-3">{block.text}</h4>
+                          <h4 className="text-xl font-bold text-white border-l-4 border-indigo-500 pl-3">
+                            {block.text}
+                          </h4>
                         ) : (
                           <div className="flex items-start gap-3 text-gray-400">
-                            <GripVertical size={16} className="mt-1 opacity-50" />
+                            <GripVertical
+                              size={16}
+                              className="mt-1 opacity-50"
+                            />
                             <p>{block.text}</p>
                           </div>
                         )}
@@ -266,7 +284,9 @@ export default function Home() {
                   {/* Input Line */}
                   <div className="relative">
                     <div className="flex items-center gap-3 border-b border-gray-800 pb-2">
-                      <div className="text-gray-500 font-mono text-lg opacity-50">+</div>
+                      <div className="text-gray-500 font-mono text-lg opacity-50">
+                        +
+                      </div>
                       <div className="text-white font-mono text-lg flex items-center">
                         {demoInput}
                         <span className="w-2 h-5 bg-indigo-500 ml-1 animate-pulse"></span>
@@ -276,19 +296,30 @@ export default function Home() {
                     {/* Slash Menu Popover */}
                     {showDemoMenu && (
                       <div className="absolute bottom-full left-0 mb-2 w-64 bg-gray-900 border border-gray-800 rounded-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-                        <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Basic Blocks</div>
+                        <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                          Basic Blocks
+                        </div>
                         <div className="p-1 space-y-0.5">
                           {[
                             { icon: Type, label: "Text", type: "Text" },
-                            { icon: Heading1, label: "Heading 1", type: "Heading 1" },
-                            { icon: List, label: "Multiple Choice", type: "Multiple Choice" }
+                            {
+                              icon: Heading1,
+                              label: "Heading 1",
+                              type: "Heading 1",
+                            },
+                            {
+                              icon: List,
+                              label: "Multiple Choice",
+                              type: "Multiple Choice",
+                            },
                           ].map((opt, idx) => (
                             <div
                               key={idx}
-                              className={`px-3 py-2 rounded flex items-center gap-3 text-sm transition-colors ${idx === demoHighlight
-                                ? "bg-indigo-500/20 text-indigo-400"
-                                : "text-gray-400"
-                                }`}
+                              className={`px-3 py-2 rounded flex items-center gap-3 text-sm transition-colors ${
+                                idx === demoHighlight
+                                  ? "bg-indigo-500/20 text-indigo-400"
+                                  : "text-gray-400"
+                              }`}
                             >
                               <opt.icon size={16} />
                               {opt.label}
@@ -310,16 +341,26 @@ export default function Home() {
                 <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-4">
                   <BarChart3 size={24} />
                 </div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">Metrics</p>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Real Analytics</h3>
+                <p className="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">
+                  Metrics
+                </p>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  Real Analytics
+                </h3>
 
                 {/* Extended Chart */}
                 <div className="flex items-end justify-between h-48 gap-2 px-1 mt-6">
                   {[40, 70, 45, 90, 60].map((h, i) => (
-                    <div key={i} className="w-full h-full bg-emerald-50 dark:bg-emerald-900/20 rounded-t-md relative overflow-hidden group-hover:bg-emerald-100 dark:group-hover:bg-emerald-800/40 transition-colors">
+                    <div
+                      key={i}
+                      className="w-full h-full bg-emerald-50 dark:bg-emerald-900/20 rounded-t-md relative overflow-hidden group-hover:bg-emerald-100 dark:group-hover:bg-emerald-800/40 transition-colors"
+                    >
                       <div
                         className="absolute bottom-0 w-full bg-emerald-500 rounded-t-md transition-all duration-1000 ease-out"
-                        style={{ height: `${h}%`, transitionDelay: `${i * 100}ms` }}
+                        style={{
+                          height: `${h}%`,
+                          transitionDelay: `${i * 100}ms`,
+                        }}
                       ></div>
                     </div>
                   ))}
@@ -328,11 +369,17 @@ export default function Home() {
                 {/* New Stats Summary */}
                 <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider font-semibold text-gray-400 mb-0.5">Views</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">24.5k</p>
+                    <p className="text-[10px] uppercase tracking-wider font-semibold text-gray-400 mb-0.5">
+                      Views
+                    </p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">
+                      24.5k
+                    </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[10px] uppercase tracking-wider font-semibold text-gray-400 mb-0.5">Growth</p>
+                    <p className="text-[10px] uppercase tracking-wider font-semibold text-gray-400 mb-0.5">
+                      Growth
+                    </p>
                     <div className="flex items-center justify-end gap-1 text-emerald-500">
                       <ArrowUpRight size={16} />
                       <span className="text-lg font-bold">12%</span>
@@ -355,8 +402,12 @@ export default function Home() {
                     <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 mb-4">
                       <Palette size={20} />
                     </div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-1">Design</p>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Themes</h3>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-1">
+                      Design
+                    </p>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                      Themes
+                    </h3>
                   </div>
 
                   <div className="flex -space-x-3">
@@ -377,7 +428,9 @@ export default function Home() {
                       <ShieldCheck size={20} />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider text-green-500 mb-1">Infrastructure</p>
+                      <p className="text-xs font-semibold uppercase tracking-wider text-green-500 mb-1">
+                        Infrastructure
+                      </p>
                       <h3 className="text-lg font-bold text-white">Reliable</h3>
                       <p className="text-gray-400 text-xs">99.99% Uptime.</p>
                     </div>
@@ -388,7 +441,11 @@ export default function Home() {
                       {/* Enhanced Shield Animation */}
                       <div className="absolute inset-0 rounded-full border-2 border-green-500/50 animate-[ping_1.5s_cubic-bezier(0,0,0.2,1)_infinite]"></div>
                       <div className="absolute inset-0 rounded-full border border-green-500/30 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite] delay-300"></div>
-                      <Globe size={40} className="text-gray-500 group-hover:text-green-500 transition-colors duration-500" strokeWidth={1} />
+                      <Globe
+                        size={40}
+                        className="text-gray-500 group-hover:text-green-500 transition-colors duration-500"
+                        strokeWidth={1}
+                      />
                     </div>
                   </div>
                 </div>
@@ -404,38 +461,56 @@ export default function Home() {
                   <div className="w-12 h-12 rounded-2xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-600 dark:text-orange-400 mb-4">
                     <Zap size={24} />
                   </div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-orange-600 dark:text-orange-400 mb-1">Performance</p>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Lightning Fast</h3>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-orange-600 dark:text-orange-400 mb-1">
+                    Performance
+                  </p>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                    Lightning Fast
+                  </h3>
                   <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed max-w-[90%]">
-                    Experience zero latency. Our optimized engine renders forms instantly, ensuring higher completion rates.
+                    Experience zero latency. Our optimized engine renders forms
+                    instantly, ensuring higher completion rates.
                   </p>
                 </div>
 
                 <div className="md:flex hidden bg-orange-500/10 rounded-full p-1.5 pr-4 items-center gap-2 border border-orange-500/20">
                   <div className="w-6 h-6 rounded-full bg-orange-500/20 flex items-center justify-center relative">
                     <div className="absolute inset-0 bg-orange-500/20 rounded-full animate-ping"></div>
-                    <Activity size={12} className="text-orange-500 relative z-10" />
+                    <Activity
+                      size={12}
+                      className="text-orange-500 relative z-10"
+                    />
                   </div>
-                  <span className="text-[10px] font-bold text-orange-500 uppercase tracking-widest">Turbo</span>
+                  <span className="text-[10px] font-bold text-orange-500 uppercase tracking-widest">
+                    Turbo
+                  </span>
                 </div>
               </div>
 
               {/* Speed Metrics Visual */}
               <div className="relative w-full mt-6 bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 flex items-center justify-between group-hover:border-orange-500/30 transition-colors">
                 <div className="flex-1 pr-4 border-r border-gray-200 dark:border-gray-700">
-                  <p className="text-xs text-gray-500 uppercase font-semibold mb-1">Load Time</p>
+                  <p className="text-xs text-gray-500 uppercase font-semibold mb-1">
+                    Load Time
+                  </p>
                   <div className="text-3xl font-mono font-bold text-gray-900 dark:text-white flex items-baseline">
                     0.2<span className="text-sm text-gray-400 ml-1">s</span>
                   </div>
                 </div>
                 <div className="flex-1 px-4">
-                  <p className="text-xs text-gray-500 uppercase font-semibold mb-2">Performance</p>
+                  <p className="text-xs text-gray-500 uppercase font-semibold mb-2">
+                    Performance
+                  </p>
                   <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                     <div className="bg-green-500 h-full w-[98%] rounded-full shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
                   </div>
                   <div className="flex justify-between mt-1">
-                    <span className="text-xs font-medium text-green-600">Excellent</span>
-                    <span className="text-xs font-mono text-gray-400">98/100</span>
+                    <span className="text-xs font-medium text-green-600">
+                      Excellent
+                    </span>
+                    <span className="text-xs font-mono text-gray-400">
+                      98/100
+                    </span>
                   </div>
                 </div>
               </div>
@@ -449,8 +524,13 @@ export default function Home() {
                 <div className="w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-6">
                   <Webhook size={28} />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Connects with Everything</h3>
-                <p className="text-gray-500 dark:text-gray-400 text-lg max-w-2xl mb-12">Send data to Slack, Notion, Google Sheets, or your own API instantly. No code required.</p>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                  Connects with Everything
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400 text-lg max-w-2xl mb-12">
+                  Send data to Slack, Notion, Google Sheets, or your own API
+                  instantly. No code required.
+                </p>
 
                 {/* Animated Web - Horizontal Layout */}
                 <div className="relative w-full max-w-3xl h-32 flex items-center justify-center">
@@ -466,20 +546,44 @@ export default function Home() {
 
                   {/* Floating Nodes */}
                   {[
-                    { icon: Share2, color: "text-blue-500", label: "Webhook", x: "-translate-x-32 md:-translate-x-48" },
-                    { icon: List, color: "text-green-500", label: "Sheets", x: "translate-x-32 md:translate-x-48" },
-                    { icon: Activity, color: "text-purple-500", label: "Slack", x: "-translate-x-64 md:-translate-x-80 hidden md:flex" },
-                    { icon: Globe, color: "text-orange-500", label: "Zapier", x: "translate-x-64 md:translate-x-80 hidden md:flex" },
+                    {
+                      icon: Share2,
+                      color: "text-blue-500",
+                      label: "Webhook",
+                      x: "-translate-x-32 md:-translate-x-48",
+                    },
+                    {
+                      icon: List,
+                      color: "text-green-500",
+                      label: "Sheets",
+                      x: "translate-x-32 md:translate-x-48",
+                    },
+                    {
+                      icon: Activity,
+                      color: "text-purple-500",
+                      label: "Slack",
+                      x: "-translate-x-64 md:-translate-x-80 hidden md:flex",
+                    },
+                    {
+                      icon: Globe,
+                      color: "text-orange-500",
+                      label: "Zapier",
+                      x: "translate-x-64 md:translate-x-80 hidden md:flex",
+                    },
                   ].map((node, i) => (
-                    <div key={i} className={`absolute z-10 bg-white dark:bg-gray-800 px-4 py-3 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 flex items-center gap-3 group-hover:scale-110 transition-transform ${node.x}`}>
+                    <div
+                      key={i}
+                      className={`absolute z-10 bg-white dark:bg-gray-800 px-4 py-3 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 flex items-center gap-3 group-hover:scale-110 transition-transform ${node.x}`}
+                    >
                       <node.icon size={20} className={node.color} />
-                      <span className="font-semibold text-gray-700 dark:text-gray-200">{node.label}</span>
+                      <span className="font-semibold text-gray-700 dark:text-gray-200">
+                        {node.label}
+                      </span>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </section>
@@ -489,12 +593,15 @@ export default function Home() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
           <div className="flex-1 text-left space-y-6">
             <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white">
-              Designed for <span className="text-indigo-600 dark:text-indigo-400">Flow</span>
+              Designed for{" "}
+              <span className="text-indigo-600 dark:text-indigo-400">Flow</span>
             </h2>
             <p className="text-lg text-gray-500 dark:text-gray-400">
-              We removed the clutter found in traditional form builders.
-              No dragging complex sidebars. Just type
-              <code className="mx-2 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded font-mono text-indigo-600 font-bold">/</code>
+              We removed the clutter found in traditional form builders. No
+              dragging complex sidebars. Just type
+              <code className="mx-2 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded font-mono text-indigo-600 font-bold">
+                /
+              </code>
               and start creating.
             </p>
             <ul className="space-y-4 pt-4">
@@ -502,9 +609,12 @@ export default function Home() {
                 "Standard Short & Long Answers",
                 "Rating & Opinion Scales",
                 "File Uploads & Dates",
-                "Logic Jumps (Coming Soon)"
+                "Logic Jumps (Coming Soon)",
               ].map((item, i) => (
-                <li key={i} className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                <li
+                  key={i}
+                  className="flex items-center gap-3 text-gray-700 dark:text-gray-300"
+                >
                   <CheckCircle2 size={20} className="text-indigo-500" />
                   {item}
                 </li>
@@ -521,10 +631,13 @@ export default function Home() {
             />
           </div>
         </div>
-      </section >
+      </section>
 
       {/* New Section: Instant Insights */}
-      < section ref={insightsRef} className="py-24 px-6 bg-white dark:bg-gray-900/50 overflow-hidden" >
+      <section
+        ref={insightsRef}
+        className="py-24 px-6 bg-white dark:bg-gray-900/50 overflow-hidden"
+      >
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row-reverse items-center gap-16">
           <div className="flex-1 text-left space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-semibold uppercase tracking-wide">
@@ -532,24 +645,40 @@ export default function Home() {
               Real-time Data
             </div>
             <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white">
-              Instant <span className="text-green-600 dark:text-green-400">Insights</span>
+              Instant{" "}
+              <span className="text-green-600 dark:text-green-400">
+                Insights
+              </span>
             </h2>
             <p className="text-lg text-gray-500 dark:text-gray-400">
-              Stop guessing. Watch your responses roll in real-time.
-              Visualize completion rates, drop-off points, and user trends without setting up complex dashboards.
+              Stop guessing. Watch your responses roll in real-time. Visualize
+              completion rates, drop-off points, and user trends without setting
+              up complex dashboards.
             </p>
             <div className="flex flex-col gap-3 pt-2">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-green-600 dark:text-green-400 font-bold">1</div>
-                <p className="text-gray-700 dark:text-gray-300 font-medium">Publish in one click</p>
+                <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-green-600 dark:text-green-400 font-bold">
+                  1
+                </div>
+                <p className="text-gray-700 dark:text-gray-300 font-medium">
+                  Publish in one click
+                </p>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-green-600 dark:text-green-400 font-bold">2</div>
-                <p className="text-gray-700 dark:text-gray-300 font-medium">Share the link anywhere</p>
+                <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-green-600 dark:text-green-400 font-bold">
+                  2
+                </div>
+                <p className="text-gray-700 dark:text-gray-300 font-medium">
+                  Share the link anywhere
+                </p>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-green-600 dark:text-green-400 font-bold">3</div>
-                <p className="text-gray-700 dark:text-gray-300 font-medium">Analyze results instantly</p>
+                <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-green-600 dark:text-green-400 font-bold">
+                  3
+                </div>
+                <p className="text-gray-700 dark:text-gray-300 font-medium">
+                  Analyze results instantly
+                </p>
               </div>
             </div>
           </div>
@@ -560,14 +689,21 @@ export default function Home() {
               <div className="flex justify-between items-center mb-8">
                 <div>
                   <div className="text-sm text-gray-400">Total Responses</div>
-                  <div className="text-3xl font-bold text-gray-900 dark:text-white">{totalResponses.toLocaleString()}</div>
+                  <div className="text-3xl font-bold text-gray-900 dark:text-white">
+                    {totalResponses.toLocaleString()}
+                  </div>
                 </div>
-                <div className="px-3 py-1 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full text-xs font-bold mr-12">+{growthRate}%</div>
+                <div className="px-3 py-1 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full text-xs font-bold mr-12">
+                  +{growthRate}%
+                </div>
               </div>
 
               <div className="flex items-end justify-between h-48 gap-2">
                 {chartHeights.map((h, i) => (
-                  <div key={i} className="w-full h-full bg-gray-100 dark:bg-gray-700 rounded-t-lg relative group overflow-hidden">
+                  <div
+                    key={i}
+                    className="w-full h-full bg-gray-100 dark:bg-gray-700 rounded-t-lg relative group overflow-hidden"
+                  >
                     <div
                       className="absolute bottom-0 left-0 w-full bg-green-500 transition-all duration-700 ease-in-out group-hover:bg-green-400"
                       style={{ height: `${h}%` }}
@@ -588,49 +724,61 @@ export default function Home() {
             </div>
 
             {/* Floating Badge: Conversion Rate */}
-            <div className={`absolute -right-4 top-10 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-1000 z-20 ease-out delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
+            <div
+              className={`absolute -right-4 top-10 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-1000 z-20 ease-out delay-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-blue-600">
                   <Zap size={16} />
                 </div>
                 <div>
                   <div className="text-xs text-gray-400">Conversion Rate</div>
-                  <div className="font-bold text-gray-900 dark:text-white">{conversionRate.toFixed(1)}%</div>
+                  <div className="font-bold text-gray-900 dark:text-white">
+                    {conversionRate.toFixed(1)}%
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Floating Badge: Avg Time */}
-            <div className={`absolute -left-6 bottom-20 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-1000 z-20 ease-out delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
+            <div
+              className={`absolute -left-6 bottom-20 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-1000 z-20 ease-out delay-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center text-orange-600">
                   <Clock size={16} />
                 </div>
                 <div>
                   <div className="text-xs text-gray-400">Avg. Completion</div>
-                  <div className="font-bold text-gray-900 dark:text-white">{Math.floor(avgTime / 60)}m {avgTime % 60}s</div>
+                  <div className="font-bold text-gray-900 dark:text-white">
+                    {Math.floor(avgTime / 60)}m {avgTime % 60}s
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Floating Badge: Active Forms */}
-            <div className={`absolute -right-2 bottom-4 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-1000 z-20 ease-out delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
+            <div
+              className={`absolute -right-2 bottom-4 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-1000 z-20 ease-out delay-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center text-purple-600">
                   <Activity size={16} />
                 </div>
                 <div>
                   <div className="text-xs text-gray-400">Active Forms</div>
-                  <div className="font-bold text-gray-900 dark:text-white">{activeForms}</div>
+                  <div className="font-bold text-gray-900 dark:text-white">
+                    {activeForms}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </section >
+      </section>
 
       {/* New Section: Make It Yours */}
-      < section className="py-24 px-6 overflow-hidden" >
+      <section className="py-24 px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
           <div className="flex-1 text-left space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-xs font-semibold uppercase tracking-wide">
@@ -638,18 +786,29 @@ export default function Home() {
               Customization
             </div>
             <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white">
-              Make it <span className="text-purple-600 dark:text-purple-400">Yours</span>
+              Make it{" "}
+              <span className="text-purple-600 dark:text-purple-400">
+                Yours
+              </span>
             </h2>
             <p className="text-lg text-gray-500 dark:text-gray-400">
-              Your form, your brand. Choose from our curated collection of themes or define your own colors.
-              Backgrounds, accents, and covers—all fully customizable.
+              Your form, your brand. Choose from our curated collection of
+              themes or define your own colors. Backgrounds, accents, and
+              covers—all fully customizable.
             </p>
             <div className="flex flex-wrap gap-3 pt-4">
-              {["#8b5cf6", "#ec4899", "#10b981", "#f59e0b", "#3b82f6", "#ef4444"].map((color, i) => (
+              {[
+                "#8b5cf6",
+                "#ec4899",
+                "#10b981",
+                "#f59e0b",
+                "#3b82f6",
+                "#ef4444",
+              ].map((color, i) => (
                 <button
                   key={i}
                   onClick={() => setActiveTheme(color)}
-                  className={`w-12 h-12 rounded-full border-4 shadow-lg hover:scale-110 transition-transform cursor-pointer ${activeTheme === color ? 'border-gray-900 dark:border-white scale-110 ring-2 ring-offset-2 ring-gray-400' : 'border-white dark:border-gray-900'}`}
+                  className={`w-12 h-12 rounded-full border-4 shadow-lg hover:scale-110 transition-transform cursor-pointer ${activeTheme === color ? "border-gray-900 dark:border-white scale-110 ring-2 ring-offset-2 ring-gray-400" : "border-white dark:border-gray-900"}`}
                   style={{ backgroundColor: color }}
                   aria-label={`Select color ${color}`}
                 />
@@ -664,7 +823,9 @@ export default function Home() {
                 style={{ backgroundColor: activeTheme }}
               >
                 <div className="absolute inset-0 bg-black/10"></div>
-                <div className="absolute bottom-4 left-4 text-white font-bold text-2xl">Project Survey</div>
+                <div className="absolute bottom-4 left-4 text-white font-bold text-2xl">
+                  Project Survey
+                </div>
               </div>
               {/* Mock Input */}
               <div className="h-12 w-full bg-white dark:bg-black rounded-lg border border-transparent shadow-sm px-4 flex items-center text-gray-400 text-sm">
@@ -682,13 +843,18 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section >
+      </section>
 
       {/* Final CTA */}
-      < section className="py-20 px-6" >
-        <div className="max-w-4xl mx-auto text-center bg-indigo-600 rounded-[2.5rem] p-12 md:p-16 text-white relative overflow-hidden shadow-2xl" style={{ backgroundColor: "#4F46E5" }}>
+      <section className="py-20 px-6">
+        <div
+          className="max-w-4xl mx-auto text-center bg-indigo-600 rounded-[2.5rem] p-12 md:p-16 text-white relative overflow-hidden shadow-2xl"
+          style={{ backgroundColor: "#4F46E5" }}
+        >
           <div className="relative z-10">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">Ready to create?</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-6">
+              Ready to create?
+            </h2>
             <p className="text-indigo-100 text-lg font-medium mb-8 max-w-xl mx-auto">
               Join without a credit card. Start collecting responses in minutes.
             </p>
@@ -705,14 +871,16 @@ export default function Home() {
           {/* Background Pattern */}
           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
         </div>
-      </section >
+      </section>
 
       {/* Footer */}
-      < footer className="border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-black" >
+      <footer className="border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-black">
         <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500 dark:text-gray-400">
           <div className="flex items-center gap-2">
             <Logo size={20} />
-            <span className="font-semibold text-gray-900 dark:text-white">FormBuddy</span>
+            <span className="font-semibold text-gray-900 dark:text-white">
+              Formium
+            </span>
             <span>© {new Date().getFullYear()}</span>
           </div>
           <div className="flex items-center gap-1">
@@ -727,7 +895,7 @@ export default function Home() {
             </a>
           </div>
         </div>
-      </footer >
-    </div >
+      </footer>
+    </div>
   );
 }

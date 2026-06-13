@@ -51,9 +51,9 @@ const Register: React.FC = () => {
 
   return (
     <div className="flex max-h-screen max-w-screen items-center justify-center bg-gray-100 dark:bg-gray-900 p-4 font-inter ">
-      { }
+      {}
       <div className="flex w-full max-w-4xl flex-col rounded-2xl bg-white dark:bg-gray-800 shadow-2xl md:flex-row ">
-        { }
+        {}
         <div className="hidden md:flex w-1/2 flex-col items-center justify-center bg-white dark:bg-gray-800 p-12  text-center">
           <div className="font-medium text-4xl lg:text-5xl text-zinc-800 dark:text-white">
             The one{" "}
@@ -73,13 +73,13 @@ const Register: React.FC = () => {
           />
         </div>
 
-        { }
+        {}
         <div className="w-full bg-white dark:bg-gray-800 p-8 md:w-1/2 lg:p-10 ">
           <h1 className="text-4xl font-extrabold text-zinc-800 dark:text-white wrap-normal">
             Craft intelligent forms
           </h1>
           <h3 className="mt-2 text-base text-zinc-500 dark:text-gray-400">
-            Meet FormBuddy, your intuitive form-building partner.
+            Meet Formium, your intuitive form-building partner.
           </h3>
 
           <form
@@ -105,10 +105,10 @@ const Register: React.FC = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
 
-            { }
+            {}
             {error && <p className="text-sm text-red-500">{error}</p>}
 
-            { }
+            {}
             {confirmPassword && !passwordsMatch && !error && (
               <p className="text-sm text-amber-600">Passwords do not match.</p>
             )}
@@ -146,7 +146,7 @@ const Register: React.FC = () => {
               )}
             </button>
 
-            { }
+            {}
             <div className="flex items-center">
               <hr className="flex-grow border-t border-gray-300 dark:border-gray-600" />
               <span className="mx-4 flex-shrink text-sm text-gray-500 dark:text-gray-400">
@@ -155,10 +155,13 @@ const Register: React.FC = () => {
               <hr className="flex-grow border-t border-gray-300 dark:border-gray-600" />
             </div>
 
-            { }
-            <GoogleAuthButton onSuccess={handleGoogleSuccess} onError={setError} />
+            {}
+            <GoogleAuthButton
+              onSuccess={handleGoogleSuccess}
+              onError={setError}
+            />
 
-            { }
+            {}
             <div className="text-center text-sm text-gray-500">
               Already have an account?
               <Link
