@@ -1,5 +1,0 @@
-/node_modules
-/build  
-/src/generated/graphql.ts
-/.env
-/src/generated/prisma
