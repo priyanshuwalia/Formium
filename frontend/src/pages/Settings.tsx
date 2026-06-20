@@ -153,7 +153,7 @@ const Settings: React.FC = () => {
             <button
               onClick={handleSave}
               disabled={loading}
-              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-black px-6 py-2.5 rounded-lg font-semibold transition shadow-lg shadow-indigo-500/30 disabled:opacity-70"
+              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-semibold transition shadow-lg shadow-indigo-500/30 disabled:opacity-70"
             >
               {loading ? (
                 <Loader2 className="animate-spin" size={18} />

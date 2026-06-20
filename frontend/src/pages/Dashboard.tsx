@@ -6,10 +6,23 @@ import { getUserForms, deleteForm } from "../api/forms";
 import type { Form } from "../types/form";
 
 const tailwindColors = [
-  "bg-red-500", "bg-orange-500", "bg-amber-500", "bg-yellow-500", "bg-lime-500",
-  "bg-green-500", "bg-emerald-500", "bg-teal-500", "bg-cyan-500", "bg-sky-500",
-  "bg-blue-500", "bg-indigo-500", "bg-violet-500", "bg-purple-500", "bg-fuchsia-500",
-  "bg-pink-500", "bg-rose-500"
+  "bg-red-500",
+  "bg-orange-500",
+  "bg-amber-500",
+  "bg-yellow-500",
+  "bg-lime-500",
+  "bg-green-500",
+  "bg-emerald-500",
+  "bg-teal-500",
+  "bg-cyan-500",
+  "bg-sky-500",
+  "bg-blue-500",
+  "bg-indigo-500",
+  "bg-violet-500",
+  "bg-purple-500",
+  "bg-fuchsia-500",
+  "bg-pink-500",
+  "bg-rose-500",
 ];
 
 const getColorForString = (str: string) => {
@@ -28,7 +41,11 @@ const Dashboard = () => {
   const [error, setError] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this form? This action cannot be undone.")) {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this form? This action cannot be undone.",
+      )
+    ) {
       return;
     }
     try {
@@ -47,7 +64,6 @@ const Dashboard = () => {
 
         if (Array.isArray(data)) {
           setForms(data);
-
         } else if (data && Array.isArray(data.forms)) {
           setForms(data.forms);
         } else {
@@ -77,17 +93,31 @@ const Dashboard = () => {
       <div className="max-w-6xl mx-auto mt-12 lg:mt-0">
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4 md:gap-0">
           <div>
-            <h1 className="text-2xl lg:text-3xl font-extrabold text-indigo-900 dark:text-white-400 tracking-tight">Dashboard</h1>
+            <h1 className="text-2xl lg:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+              Dashboard
+            </h1>
             <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm lg:text-lg">
-              Welcome back, <span className="font-semibold text-indigo-600 dark:text-indigo-400">{user?.email}</span>
+              Welcome back,{" "}
+              <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+                {user?.email}
+              </span>
             </p>
           </div>
           <Link
             to="/create-form"
-            className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-black px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 flex items-center gap-2 w-full md:w-auto justify-center"
+            className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white dark:text-black px-6 py-3 rounded-xl font-semibold shadow-lg shadow-indigo-500/20 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 flex items-center gap-2 w-full md:w-auto justify-center"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                clipRule="evenodd"
+              />
             </svg>
             Create New Form
           </Link>
@@ -102,12 +132,28 @@ const Dashboard = () => {
         {forms.length === 0 && !error ? (
           <div className="text-center py-20 bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-4">
             <div className="bg-indigo-50 dark:bg-indigo-900/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-indigo-500 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-10 w-10 text-indigo-500 dark:text-indigo-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">No forms yet</h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-sm mx-auto">Create your first form to start collecting responses from your users.</p>
+            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+              No forms yet
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-sm mx-auto">
+              Create your first form to start collecting responses from your
+              users.
+            </p>
             <Link
               to="/create-form"
               className="text-indigo-600 dark:text-indigo-400 font-semibold hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
@@ -122,10 +168,18 @@ const Dashboard = () => {
                 key={form.id}
                 className="group bg-white dark:bg-gray-900 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col h-full hover:border-indigo-100 dark:hover:border-indigo-900/50 transform hover:-translate-y-1"
               >
-                <div className={`h-3 w-full ${form.theme || getColorForString(form.id)}`}></div>
+                <div
+                  className={`h-3 w-full ${form.theme || getColorForString(form.id)}`}
+                ></div>
                 <div className="p-6 flex-1 flex flex-col">
                   <div className="flex justify-between items-start mb-4">
-                    <Link to={`/forms/${form.slug}`} className="text-xl font-bold text-gray-800 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors line-clamp-1" title={form.title}>
+                    <Link
+                      to={`/forms/${form.slug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xl font-bold text-gray-800 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors line-clamp-1"
+                      title={form.title}
+                    >
                       {form.title}
                     </Link>
                     {form.isPublished && (
@@ -141,11 +195,24 @@ const Dashboard = () => {
 
                   <div className="flex items-center justify-between text-sm text-gray-400 dark:text-gray-500 mt-auto pt-4 border-t border-gray-50 dark:border-gray-800">
                     <div className="flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                        />
                       </svg>
-                      { }
-                      <span>{(form as any)._count?.responses || 0} responses</span>
+                      {}
+                      <span>
+                        {(form as any)._count?.responses || 0} responses
+                      </span>
                     </div>
                     <div className="flex gap-2 items-center">
                       <button
@@ -155,7 +222,10 @@ const Dashboard = () => {
                       >
                         <Trash2 size={16} />
                       </button>
-                      <Link to={`/forms/${form.slug}/responses`} className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium text-xs border border-indigo-200 dark:border-indigo-900 px-2 py-1 rounded hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition">
+                      <Link
+                        to={`/forms/${form.slug}/responses`}
+                        className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium text-xs border border-indigo-200 dark:border-indigo-900 px-2 py-1 rounded hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition"
+                      >
                         View Results
                       </Link>
                     </div>

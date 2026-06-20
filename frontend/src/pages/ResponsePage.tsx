@@ -14,6 +14,23 @@ interface FullForm {
 
 type ResponsesState = Record<string, string | string[] | number | null>;
 
+type ChatMessage = {
+  role: "user" | "assistant";
+  content: string;
+};
+
+type ExtractedItem = {
+  blockId: string;
+  value: string;
+};
+
+type ConversationalApiResponse = {
+  submitted: boolean;
+  assistantMessage: string;
+  items?: ExtractedItem[];
+  requestId?: string;
+};
+
 const ResponsePage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
 
@@ -22,6 +39,11 @@ const ResponsePage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState<string>("");
+  const [chatApiKey, setChatApiKey] = useState<string>("");
+  const [chatSubmitting, setChatSubmitting] = useState<boolean>(false);
+  const [interviewStarted, setInterviewStarted] = useState<boolean>(false);
 
   useEffect(() => {
     if (!slug) {
@@ -72,10 +94,7 @@ const ResponsePage: React.FC = () => {
     handleInputChange(blockId, newValues);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-
+  const buildResponsePayload = () => {
     const payload = {
       formId: form?.id,
       items: Object.entries(responses).map(([blockId, value]) => ({
@@ -84,8 +103,147 @@ const ResponsePage: React.FC = () => {
       })),
     };
 
+    return payload;
+  };
+
+  const submitCurrentResponses = async () => {
+    await API.post("/response", buildResponsePayload());
+  };
+
+  const applyExtractedItems = (items: ExtractedItem[]) => {
+    setResponses((prev) => {
+      const next = { ...prev };
+
+      items.forEach(({ blockId, value }) => {
+        const block = form?.blocks.find((formBlock) => formBlock.id === blockId);
+
+        if (block?.type === "CHECKBOXES") {
+          next[blockId] = value
+            ? value.split(",").map((item) => item.trim()).filter(Boolean)
+            : [];
+          return;
+        }
+
+        next[blockId] = value;
+      });
+
+      return next;
+    });
+  };
+
+  const requestInterviewTurn = async (messages: ChatMessage[]) => {
+    if (!form?.id) {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "I could not load this form yet. Please refresh and try again.",
+        },
+      ]);
+      return;
+    }
+
+    if (!chatApiKey.trim()) {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "Please enter your own OpenRouter API key first. It is used only for this request and is not saved by FormBuddy.",
+        },
+      ]);
+      return;
+    }
+
+    setChatSubmitting(true);
+
     try {
-      await API.post("/response", payload);
+      const response = await API.post("/response/conversational", {
+        formId: form.id,
+        messages,
+        apiKey: chatApiKey,
+      });
+      const data = response.data as ConversationalApiResponse;
+
+      if (data.items) {
+        applyExtractedItems(data.items);
+      }
+
+      setChatMessages([
+        ...messages,
+        {
+          role: "assistant",
+          content: data.assistantMessage,
+        },
+      ]);
+      setInterviewStarted(true);
+
+      if (data.submitted) {
+        alert("Form submitted successfully!");
+        window.location.reload();
+      }
+    } catch (err: any) {
+      const data = err.response?.data;
+      const requestIdText = data?.requestId ? ` (request ${data.requestId})` : "";
+      const statusText = err.response?.status ? `HTTP ${err.response.status}: ` : "";
+
+      if (err.response?.status === 400 && data?.error?.includes("API key")) {
+        setChatMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content:
+              `${data.error}${requestIdText}`,
+          },
+        ]);
+      } else {
+        console.error("Failed to submit conversational response:", err);
+        setChatMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: data?.error
+              ? `${statusText}${data.error}${requestIdText}`
+              : `No response from the backend: ${err.message || "unknown error"}. Check the browser Network tab and backend logs.`,
+          },
+        ]);
+      }
+    } finally {
+      setChatSubmitting(false);
+    }
+  };
+
+  const handleStartInterview = async () => {
+    if (!form) {
+      return;
+    }
+
+    await requestInterviewTurn([]);
+  };
+
+  const handleConversationalSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!form || !chatInput.trim() || !interviewStarted) {
+      return;
+    }
+
+    const nextMessages: ChatMessage[] = [
+      ...chatMessages,
+      { role: "user", content: chatInput.trim() },
+    ];
+
+    setChatMessages(nextMessages);
+    setChatInput("");
+    await requestInterviewTurn(nextMessages);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      await submitCurrentResponses();
       alert("Form submitted successfully!");
 
       window.location.reload();
@@ -132,6 +290,114 @@ const ResponsePage: React.FC = () => {
                 {form.description}
               </p>
             )}
+          </div>
+
+          <div className="p-8 sm:p-12 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
+            <div className="flex items-start justify-between gap-4 mb-5">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                  Answer by Chat
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  Use your own OpenRouter API key. The model will read the full
+                  form, ask questions naturally, and submit automatically when
+                  the conversation is complete.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-3 max-h-80 overflow-y-auto pr-1 mb-4">
+              {chatMessages.length === 0 && (
+                <div className="flex justify-start">
+                  <div className="max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+                    Enter your OpenRouter API key and start the interview. I
+                    will ask the form questions one by one.
+                  </div>
+                </div>
+              )}
+              {chatMessages.map((message, index) => (
+                <div
+                  key={`${message.role}-${index}`}
+                  className={`flex ${
+                    message.role === "user" ? "justify-end" : "justify-start"
+                  }`}
+                >
+                  <div
+                    className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                      message.role === "user"
+                        ? "bg-indigo-600 text-white"
+                        : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100"
+                    }`}
+                  >
+                    {message.content}
+                  </div>
+                </div>
+              ))}
+              {chatSubmitting && (
+                <div className="flex justify-start">
+                  <div className="rounded-2xl px-4 py-3 text-sm bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                    Thinking of the next question...
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mb-4">
+              <label
+                htmlFor="chat-api-key"
+                className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2"
+              >
+                Your OpenRouter API key
+              </label>
+              <input
+                id="chat-api-key"
+                type="password"
+                value={chatApiKey}
+                onChange={(e) => setChatApiKey(e.target.value)}
+                placeholder="sk-or-v1-..."
+                disabled={chatSubmitting || interviewStarted}
+                autoComplete="off"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-400 transition-all duration-200 shadow-sm"
+              />
+            </div>
+
+            {!interviewStarted && (
+              <button
+                type="button"
+                onClick={handleStartInterview}
+                disabled={chatSubmitting || !chatApiKey.trim()}
+                className="w-full mb-4 bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-200 text-white dark:text-black px-5 py-3 rounded-xl font-bold shadow-lg transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {chatSubmitting ? "Starting..." : "Start Interview"}
+              </button>
+            )}
+
+            <form onSubmit={handleConversationalSubmit} className="flex gap-3">
+              <textarea
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                placeholder={
+                  interviewStarted
+                    ? "Reply to the question..."
+                    : "Start the interview first..."
+                }
+                rows={2}
+                disabled={chatSubmitting || !interviewStarted}
+                className="min-h-14 flex-1 resize-none px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-400 transition-all duration-200 shadow-sm"
+              />
+              <button
+                type="submit"
+                disabled={
+                  chatSubmitting ||
+                  !chatInput.trim() ||
+                  !chatApiKey.trim() ||
+                  !interviewStarted
+                }
+                className="self-stretch bg-gray-900 hover:bg-gray-800 dark:bg-white dark:hover:bg-gray-200 text-white dark:text-black px-5 rounded-xl font-bold shadow-lg transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {chatSubmitting ? "Sending" : "Send"}
+              </button>
+            </form>
           </div>
 
           <form onSubmit={handleSubmit} className="p-8 sm:p-12 space-y-8">
@@ -299,19 +565,19 @@ const ResponsePage: React.FC = () => {
                             height="32"
                             viewBox="0 0 24 24"
                             fill={
-                              (responses[id] as number) >= star
+                              Number(responses[id]) >= star
                                 ? "#fbbf24"
                                 : "none"
                             } // amber-400
                             stroke={
-                              (responses[id] as number) >= star
+                              Number(responses[id]) >= star
                                 ? "#fbbf24"
                                 : "currentColor"
                             }
                             strokeWidth="2"
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            className={`transition-colors ${(responses[id] as number) >= star ? "" : "text-gray-300 dark:text-gray-600 hover:text-gray-400"}`}
+                            className={`transition-colors ${Number(responses[id]) >= star ? "" : "text-gray-300 dark:text-gray-600 hover:text-gray-400"}`}
                           >
                             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                           </svg>
