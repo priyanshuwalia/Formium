@@ -1,4 +1,4 @@
-import * as ResponseService from "./resposnse.service.js";
+import * as ResponseService from "./response.service.js";
 export const createResponseHandler = async (req, res) => {
     if (!req.body) {
         res.status(400).json({ error: "Request body is empty" });

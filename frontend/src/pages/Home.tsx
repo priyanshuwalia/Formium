@@ -19,8 +19,6 @@ import {
   Heading1,
   List,
   GripVertical,
-  Webhook,
-  Share2,
   ShieldCheck,
   Globe,
 } from "lucide-react";
@@ -208,7 +206,7 @@ export default function Home() {
           </h1>
 
           <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-500 dark:text-gray-400 leading-relaxed mb-10">
-            Create intelligent, conversation-style forms without the clutter.
+            Create clean, distraction-free forms without the clutter.
             Focus on the content, and let Formium handle the experience.
           </p>
 
@@ -432,7 +430,7 @@ export default function Home() {
                         Infrastructure
                       </p>
                       <h3 className="text-lg font-bold text-white">Reliable</h3>
-                      <p className="text-gray-400 text-xs">99.99% Uptime.</p>
+                      <p className="text-gray-400 text-xs">Deployed on Vercel, powered by Postgres.</p>
                     </div>
                   </div>
 
@@ -468,8 +466,8 @@ export default function Home() {
                     Lightning Fast
                   </h3>
                   <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed max-w-[90%]">
-                    Experience zero latency. Our optimized engine renders forms
-                    instantly, ensuring higher completion rates.
+                    A lightweight React renderer keeps load time low, so your
+                    forms load fast on any connection.
                   </p>
                 </div>
 
@@ -516,70 +514,44 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 6. Integrations (Span 3 / Full Width) */}
+            {/* 6. Block Types (Span 3 / Full Width) */}
             <div className="md:col-span-3 group relative p-10 rounded-3xl bg-blue-50 dark:bg-gray-900 border border-blue-100 dark:border-gray-800 overflow-hidden hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300">
               <div className="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)] opacity-10 group-hover:opacity-20 transition-opacity"></div>
 
               <div className="relative z-10 flex flex-col items-center text-center">
                 <div className="w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-6">
-                  <Webhook size={28} />
+                  <Type size={28} />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                  Connects with Everything
+                  Twelve Block Types, One Slash
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400 text-lg max-w-2xl mb-12">
-                  Send data to Slack, Notion, Google Sheets, or your own API
-                  instantly. No code required.
+                  Short & long answers, choice groups, dates, file uploads,
+                  ratings and more — all added by typing <code className="mx-1 px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded font-mono text-indigo-600 font-semibold">/</code>.
                 </p>
 
-                {/* Animated Web - Horizontal Layout */}
-                <div className="relative w-full max-w-3xl h-32 flex items-center justify-center">
-                  {/* Lines */}
-                  <div className="absolute inset-0 flex items-center justify-center overflow-visible">
-                    <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-indigo-300 dark:via-indigo-700 to-transparent"></div>
-                  </div>
-
-                  {/* Center Node */}
-                  <div className="relative z-20 w-20 h-20 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 flex items-center justify-center text-indigo-600 mx-8">
-                    <Logo size={40} />
-                  </div>
-
-                  {/* Floating Nodes */}
+                {/* Block Type Chips */}
+                <div className="relative w-full flex flex-wrap items-center justify-center gap-3">
                   {[
-                    {
-                      icon: Share2,
-                      color: "text-blue-500",
-                      label: "Webhook",
-                      x: "-translate-x-32 md:-translate-x-48",
-                    },
-                    {
-                      icon: List,
-                      color: "text-green-500",
-                      label: "Sheets",
-                      x: "translate-x-32 md:translate-x-48",
-                    },
-                    {
-                      icon: Activity,
-                      color: "text-purple-500",
-                      label: "Slack",
-                      x: "-translate-x-64 md:-translate-x-80 hidden md:flex",
-                    },
-                    {
-                      icon: Globe,
-                      color: "text-orange-500",
-                      label: "Zapier",
-                      x: "translate-x-64 md:translate-x-80 hidden md:flex",
-                    },
-                  ].map((node, i) => (
-                    <div
-                      key={i}
-                      className={`absolute z-10 bg-white dark:bg-gray-800 px-4 py-3 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 flex items-center gap-3 group-hover:scale-110 transition-transform ${node.x}`}
+                    "Short Answer",
+                    "Long Answer",
+                    "Multiple Choice",
+                    "Checkboxes",
+                    "Dropdown",
+                    "Number",
+                    "Email",
+                    "Phone",
+                    "Link",
+                    "Date",
+                    "Rating",
+                    "File Upload",
+                  ].map((label) => (
+                    <span
+                      key={label}
+                      className="bg-white dark:bg-gray-800 px-4 py-2.5 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 font-semibold text-sm text-gray-700 dark:text-gray-200 group-hover:scale-105 transition-transform"
                     >
-                      <node.icon size={20} className={node.color} />
-                      <span className="font-semibold text-gray-700 dark:text-gray-200">
-                        {node.label}
-                      </span>
-                    </div>
+                      {label}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -642,7 +614,7 @@ export default function Home() {
           <div className="flex-1 text-left space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-semibold uppercase tracking-wide">
               <BarChart3 size={12} />
-              Real-time Data
+              Response Analytics
             </div>
             <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white">
               Instant{" "}
@@ -651,9 +623,9 @@ export default function Home() {
               </span>
             </h2>
             <p className="text-lg text-gray-500 dark:text-gray-400">
-              Stop guessing. Watch your responses roll in real-time. Visualize
-              completion rates, drop-off points, and user trends without setting
-              up complex dashboards.
+              Watch your responses come in and visualize trends over time.
+              Understand which forms perform best without setting up complex
+              dashboards.
             </p>
             <div className="flex flex-col gap-3 pt-2">
               <div className="flex items-center gap-3">
@@ -792,9 +764,8 @@ export default function Home() {
               </span>
             </h2>
             <p className="text-lg text-gray-500 dark:text-gray-400">
-              Your form, your brand. Choose from our curated collection of
-              themes or define your own colors. Backgrounds, accents, and
-              covers—all fully customizable.
+              Your form, your brand. Pick a cover color that fits, with more
+              theme options on the way.
             </p>
             <div className="flex flex-wrap gap-3 pt-4">
               {[

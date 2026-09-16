@@ -15,75 +15,106 @@
 <div align="center" style="margin-top: 1rem;">
   <p><strong>Built with the tools and technologies:</strong></p>
   <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" alt="React">
+  <img src="https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js">
   <img src="https://img.shields.io/badge/node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js">
   <img src="https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB" alt="Express.js">
-  <img src="https://img.shields.io/badge/mongodb-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB">
-  <img src="https://img.shields.io/badge/redux-%23593d88.svg?style=for-the-badge&logo=redux&logoColor=white" alt="Redux">
+  <img src="https://img.shields.io/badge/postgres-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma">
   <img src="https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
 </div>
 
 ---
 
-## 📖 Table of Contents
+## Overview
 
-- [Overview](#overview)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-- [Usage](#usage)
-- [Testing](#testing)
+Formium is a form builder that lets you create, publish, and collect responses for custom forms using a slash-command editor. Type `/` to add any block type — short answers, multiple choice, dates, ratings, file uploads, and more — then publish and share a link. Every form gets its own response table and analytics.
 
 ---
 
-## Overview
+## Repository layout
 
-Formium is a powerful and intuitive tool designed to streamline the process of creating and managing forms. Whether you're building a simple contact form or a complex survey, Formium provides the features and flexibility you need to get the job done efficiently. Our goal is to empower developers and creators by simplifying form building.
+| Directory | Description |
+|---|---|
+| `formium/` | Next.js 16 app (App Router) — the consolidated product frontend + API |
+| `backend/` | Express 5 + Prisma API (being migrated into `formium/app/api/`) |
+| `frontend/` | Legacy Vite + React 19 SPA (being consolidated into `formium/`) |
 
 ---
 
 ## Getting Started
 
-Follow these instructions to get a copy of the project up and running on your local machine.
-
 ### Prerequisites
 
-This project requires the following dependencies:
-
-- **Programming Language:** TypeScript
-- **Package Manager:** Npm
+- Node.js 20+
+- PostgreSQL (or Docker)
+- npm
 
 ### Installation
 
-Build Formium from the source and install dependencies:
+1. Clone the repository:
 
-1.  **Clone the repository:**
+   ```sh
+   git clone https://github.com/priyanshuwalia/Formium
+   cd Formium
+   ```
 
-    ```sh
-    git clone https://github.com/priyanshuwalia/Formium
-    ```
+2. Set up the database:
 
-2.  **Navigate to the project directory:**
+   ```sh
+   cd backend
+   cp example.env .env
+   # fill in DATABASE_URL, JWT_SECRET, PORT
+   npx prisma migrate dev
+   ```
 
-    ```sh
-    cd Formium
-    ```
+3. Run the API:
 
-3.  **Install the dependencies:**
+   ```sh
+   npm install
+   npm run dev
+   ```
 
-    Using `npm`:
+4. Run the frontend:
 
-    ```sh
-    npm install
-    ```
+   ```sh
+   cd ../frontend
+   cp .env.example .env  # or create .env with VITE_GOOGLE_CLIENT_ID and VITE_API_BASE_URL
+   npm install
+   npm run dev
+   ```
 
 ---
 
-## Usage
+## Feature overview
 
-Run the project with:
+- **Slash-command form builder** — type `/` to insert any block type
+- **12 block types** — short/long answers, multiple choice, checkboxes, dropdown, number, email, phone, link, date, rating, file upload
+- **Publish & share** — each form gets a unique slug URL
+- **Responses** — per-form response tables with detail views
+- **Analytics** — response counts, 7-day trends, top-performing forms
+- **Auth** — email/password (bcrypt) + Google sign-in (GSI), JWT sessions
+- **Dark mode** — light/dark theme toggle
+- **Templates** — quick-start contact, event registration, and feedback templates
 
-Using `npm`:
+---
 
-```sh
-npm run start
-```
+## API
+
+The API is documented under `backend/src/modules/`. Route groups:
+
+- `/api/auth` — register, login, google
+- `/api/forms` — create, list, get by slug, update, delete
+- `/api/form-blocks` — CRUD for blocks
+- `/api/response` — submit and read responses
+- `/api/analytics` — aggregate stats
+- `/api/user` — profile update/delete
+
+---
+
+## Contributing
+
+Open an issue or pull request. See the MIT license below.
+
+## License
+
+MIT © 2025 Priyanshu Walia

@@ -11,12 +11,13 @@ export const createFormBlockHandler = async (req, res) => {
 };
 export const getBlocksByFormIdHandler = async (req, res) => {
     try {
-        const { formId } = req.body;
+        const { formId } = req.params;
         const blocks = await FormBlockService.getBlocksByFormId(formId);
         if (!blocks || blocks.length === 0) {
             res.status(404).json({ error: "no blocks found" });
             return;
         }
+        res.json(blocks);
     }
     catch (err) {
         res.status(500).json({ error: "failed to fetch form Blocks", err });
@@ -32,6 +33,7 @@ export const updateBlockHandler = async (req, res) => {
             res.status(404).json({ error: "block not found or unauthorized" });
             return;
         }
+        res.json({ message: "Block updated successfully" });
     }
     catch (err) {
         res.status(500).json({ error: "Failed to Update Block", details: err });
@@ -40,7 +42,7 @@ export const updateBlockHandler = async (req, res) => {
 export const deleteBlockHandler = async (req, res) => {
     try {
         const { id } = req.params;
-        const { userId } = req.user.id;
+        const userId = req.user.id;
         const deleted = await FormBlockService.deleteBlockById(id, userId);
         if (deleted.count === 0) {
             res.status(404).json({ error: "Block not found or unauthorized" });
