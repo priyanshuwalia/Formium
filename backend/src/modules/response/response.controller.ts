@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import * as ResponseService from "./resposnse.service.js"
+import * as ResponseService from "./response.service.js"
 
 export const createResponseHandler = async (req: Request, res: Response) => {
     if (!req.body) {

@@ -9,6 +9,7 @@ interface FullForm {
   title: string;
   slug: string;
   description?: string;
+  successText?: string;
   blocks: FormBlock[];
 }
 
@@ -22,6 +23,7 @@ const ResponsePage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [submitted, setSubmitted] = useState<boolean>(false);
 
   useEffect(() => {
     if (!slug) {
@@ -86,16 +88,45 @@ const ResponsePage: React.FC = () => {
 
     try {
       await API.post("/response", payload);
-      alert("Form submitted successfully!");
-
-      window.location.reload();
+      setSubmitted(true);
     } catch (err: any) {
       console.error("Failed to submit responses:", err);
-      alert("There was an error submitting your form. Please try again.");
+      setError("There was an error submitting your form. Please try again.");
     } finally {
       setSubmitting(false);
     }
   };
+
+  if (submitted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400 mx-auto mb-6">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-8 h-8"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            {form?.successText || "Response submitted!"}
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400">
+            Thank you for your response.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
