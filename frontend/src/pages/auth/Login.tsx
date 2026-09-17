@@ -38,12 +38,12 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen w-screen items-center justify-center bg-gray-100 dark:bg-gray-900 p-4 font-inter">
+    <div className="flex min-h-screen w-screen items-center justify-center bg-gray-100 p-4 font-inter">
       {}
-      <div className="flex w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-2xl md:flex-row">
+      <div className="flex w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl md:flex-row">
         {}
-        <div className="hidden md:flex w-1/2 flex-col items-center justify-center bg-white dark:bg-gray-800 p-12 text-center">
-          <div className="font-medium text-4xl lg:text-5xl text-zinc-800 dark:text-white">
+        <div className="hidden md:flex w-1/2 flex-col items-center justify-center bg-white p-12 text-center">
+          <div className="font-medium text-4xl lg:text-5xl text-zinc-800">
             Sign back in to your{" "}
             <span className="bg-gradient-to-r from-[#F5CE9B] to-[#E84C4A] bg-clip-text text-transparent">
               Smart
@@ -57,16 +57,16 @@ const Login = () => {
           <img
             src={clumsyMan}
             alt="Login Illustration"
-            className="mt-8 max-w-xs dark:invert"
+            className="mt-8 max-w-xs"
           />
         </div>
 
         {}
-        <div className="w-full bg-white dark:bg-gray-800 p-8 md:w-1/2 lg:p-12">
-          <h1 className="text-4xl font-extrabold text-zinc-800 dark:text-white">
+        <div className="w-full bg-white p-8 md:w-1/2 lg:p-12">
+          <h1 className="text-4xl font-extrabold text-zinc-800">
             Welcome back
           </h1>
-          <h3 className="mt-2 text-base text-zinc-500 dark:text-gray-400">
+          <h3 className="mt-2 text-base text-zinc-500">
             Continue building forms with Formium.
           </h3>
 
@@ -117,11 +117,11 @@ const Login = () => {
 
             {}
             <div className="flex items-center">
-              <hr className="flex-grow border-t border-gray-300 dark:border-gray-600" />
-              <span className="mx-4 flex-shrink text-sm text-gray-500 dark:text-gray-400">
+              <hr className="flex-grow border-t border-gray-300" />
+              <span className="mx-4 flex-shrink text-sm text-gray-500">
                 or
               </span>
-              <hr className="flex-grow border-t border-gray-300 dark:border-gray-600" />
+              <hr className="flex-grow border-t border-gray-300" />
             </div>
 
             {}
@@ -135,7 +135,7 @@ const Login = () => {
               Don't have an account?
               <Link
                 to="/register"
-                className="ml-1 font-semibold text-gray-700 dark:text-white underline hover:text-blue-800 dark:hover:text-blue-400"
+                className="ml-1 font-semibold text-gray-700 underline hover:text-blue-800"
               >
                 Sign up
               </Link>
@@ -144,7 +144,7 @@ const Login = () => {
               Forgot password?
               <Link
                 to="/reset-password"
-                className="ml-1 font-semibold text-gray-700 dark:text-white underline hover:text-blue-800 dark:hover:text-blue-400"
+                className="ml-1 font-semibold text-gray-700 underline hover:text-blue-800"
               >
                 Reset
               </Link>

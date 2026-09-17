@@ -46,19 +46,19 @@ const HelpPage: React.FC<HelpPageProps> = ({ variant }) => {
   const Icon = content.icon;
 
   return (
-    <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950 px-4 py-8 lg:px-10">
+    <div className="flex-1 overflow-y-auto bg-gray-50 px-4 py-8 lg:px-10">
       <div className="mx-auto max-w-5xl">
-        <div className="rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-8 shadow-sm">
+        <div className="rounded-[2rem] border border-gray-200 bg-white p-8 shadow-sm">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300">
+              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
                 <Icon size={24} />
               </div>
-              <h1 className="text-3xl font-extrabold text-gray-950 dark:text-white">{content.title}</h1>
-              <p className="mt-3 max-w-2xl text-gray-500 dark:text-gray-400">{content.subtitle}</p>
+              <h1 className="text-3xl font-extrabold text-gray-950">{content.title}</h1>
+              <p className="mt-3 max-w-2xl text-gray-500">{content.subtitle}</p>
             </div>
-            <div className="rounded-3xl border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-300">
-              <div className="flex items-center gap-2 font-semibold text-gray-900 dark:text-white">
+            <div className="rounded-3xl border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600">
+              <div className="flex items-center gap-2 font-semibold text-gray-900">
                 <Sparkles size={16} />
                 Formium basics
               </div>
@@ -69,22 +69,22 @@ const HelpPage: React.FC<HelpPageProps> = ({ variant }) => {
 
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           {content.sections.map(([title, body]) => (
-            <section key={title} className="rounded-[1.75rem] border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-2xl bg-gray-100 text-indigo-600 dark:bg-gray-800 dark:text-indigo-300">
+            <section key={title} className="rounded-[1.75rem] border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-2xl bg-gray-100 text-indigo-600">
                 <CheckCircle2 size={20} />
               </div>
-              <h2 className="text-lg font-bold text-gray-950 dark:text-white">{title}</h2>
-              <p className="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">{body}</p>
+              <h2 className="text-lg font-bold text-gray-950">{title}</h2>
+              <p className="mt-2 text-sm leading-6 text-gray-500">{body}</p>
             </section>
           ))}
         </div>
 
-        <div className="mt-6 rounded-[1.75rem] border border-gray-200 dark:border-gray-800 bg-gray-100/70 dark:bg-gray-900 p-6">
-          <div className="flex items-center gap-3 text-gray-900 dark:text-white">
-            <BookOpen size={20} className="text-indigo-600 dark:text-indigo-300" />
+        <div className="mt-6 rounded-[1.75rem] border border-gray-200 bg-gray-100/70 p-6">
+          <div className="flex items-center gap-3 text-gray-900">
+            <BookOpen size={20} className="text-indigo-600" />
             <h2 className="text-lg font-bold">Recommended next step</h2>
           </div>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-sm text-gray-600">
             Create a short test form with one multiple choice question and two logic jumps. Preview the response flow before sharing it with real respondents.
           </p>
         </div>

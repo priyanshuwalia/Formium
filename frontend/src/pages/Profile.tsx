@@ -33,18 +33,18 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-950 px-4 py-8 lg:px-10">
+    <div className="flex-1 overflow-y-auto bg-gray-50 px-4 py-8 lg:px-10">
       <div className="mx-auto max-w-5xl">
-        <div className="rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-8 shadow-sm">
+        <div className="rounded-[2rem] border border-gray-200 bg-white p-8 shadow-sm">
           <div className="flex flex-col gap-6 md:flex-row md:items-center">
             <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-[2rem] bg-gradient-to-br from-indigo-500 to-purple-500 text-4xl font-extrabold text-white shadow-lg shadow-indigo-500/20">
               {initials}
             </div>
             <div className="min-w-0">
-              <h1 className="text-3xl font-extrabold text-gray-950 dark:text-white">
+              <h1 className="text-3xl font-extrabold text-gray-950">
                 {name || "Your profile"}
               </h1>
-              <p className="mt-2 flex items-center gap-2 text-gray-500 dark:text-gray-400">
+              <p className="mt-2 flex items-center gap-2 text-gray-500">
                 <Mail size={16} />
                 <span className="truncate">{user?.email}</span>
               </p>
@@ -52,34 +52,34 @@ const Profile: React.FC = () => {
           </div>
         </div>
 
-        <section className="mt-6 rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
+        <section className="mt-6 rounded-[2rem] border border-gray-200 bg-white p-6 shadow-sm">
           <div className="grid gap-5">
             <div>
-              <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Full name</label>
+              <label className="mb-2 block text-sm font-semibold text-gray-700">Full name</label>
               <div className="relative">
                 <User className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
                 <input
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   placeholder="Your name"
-                  className="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-12 pr-4 text-gray-950 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                  className="w-full rounded-2xl border border-gray-200 bg-white py-3 pl-12 pr-4 text-gray-950 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                 />
               </div>
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">Bio</label>
+              <label className="mb-2 block text-sm font-semibold text-gray-700">Bio</label>
               <textarea
                 value={bio}
                 onChange={(event) => setBio(event.target.value)}
                 rows={5}
                 placeholder="A short note about you or your team..."
-                className="w-full resize-none rounded-2xl border border-gray-200 bg-white p-4 text-gray-950 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                className="w-full resize-none rounded-2xl border border-gray-200 bg-white p-4 text-gray-950 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
               />
             </div>
 
             <div className="flex items-center justify-end gap-3">
-              {message && <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{message}</span>}
+              {message && <span className="text-sm font-medium text-gray-500">{message}</span>}
               <button
                 onClick={handleSave}
                 disabled={saving}

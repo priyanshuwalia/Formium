@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useTheme } from "../context/ThemeContext";
 import {
   TerminalSquare,
   BarChart3,
@@ -12,8 +11,6 @@ import {
   Zap,
   Clock,
   Activity,
-  Moon,
-  Sun,
   LogOut,
   Type,
   Heading1,
@@ -27,7 +24,6 @@ import Logo from "../components/Logo";
 
 export default function Home() {
   const { user, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   // State for dynamic theme selector
   const [activeTheme, setActiveTheme] = useState("#8b5cf6"); // Default purple
   const [chartHeights, setChartHeights] = useState([40, 70, 45, 90, 60]);
@@ -124,26 +120,18 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black font-inter selection:bg-indigo-500/20">
+    <div className="min-h-screen bg-gray-50 font-inter selection:bg-indigo-500/20">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 transition-colors duration-300">
+      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Logo size={32} />
-            <span className="text-xl font-bold text-gray-900 dark:text-white">
+            <span className="text-xl font-bold text-gray-900">
               Formium
             </span>
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            >
-              {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-
             {user ? (
               <>
                 <Link
@@ -155,7 +143,7 @@ export default function Home() {
                 </Link>
                 <button
                   onClick={() => logout()}
-                  className="p-2 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                  className="p-2 text-gray-500 hover:text-red-600 transition-colors"
                   title="Logout"
                 >
                   <LogOut size={20} />
@@ -165,7 +153,7 @@ export default function Home() {
               <>
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white font-medium text-sm transition-colors hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg"
+                  className="px-4 py-2 text-gray-600 hover:text-indigo-600 font-medium text-sm transition-colors hover:bg-gray-50 rounded-lg"
                 >
                   Log in
                 </Link>
@@ -185,7 +173,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6">
         <div className="max-w-7xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-semibold uppercase tracking-wide mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-semibold uppercase tracking-wide mb-8">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
@@ -193,7 +181,7 @@ export default function Home() {
             Simple. Powerful. Free.
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 dark:text-white tracking-tight mb-8">
+          <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 tracking-tight mb-8">
             The one{" "}
             <span className="bg-gradient-to-r from-[#F5CE9B] to-[#E84C4A] bg-clip-text text-transparent">
               Stylish
@@ -205,7 +193,7 @@ export default function Home() {
             <br className="hidden md:block" /> form builder.
           </h1>
 
-          <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-500 dark:text-gray-400 leading-relaxed mb-10">
+          <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-500 leading-relaxed mb-10">
             Create clean, distraction-free forms without the clutter.
             Focus on the content, and let Formium handle the experience.
           </p>
@@ -213,7 +201,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               to="/create-form"
-              className="w-full sm:w-auto px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-black rounded-xl font-bold text-lg hover:-translate-y-1 transition-transform flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-8 py-4 bg-gray-900 text-white rounded-xl font-bold text-lg hover:-translate-y-1 transition-transform flex items-center justify-center gap-2"
             >
               Start Building Now
               <ArrowRight size={20} />
@@ -221,7 +209,7 @@ export default function Home() {
             {!user && (
               <Link
                 to="/login"
-                className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-white rounded-xl font-bold text-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                className="w-full sm:w-auto px-8 py-4 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold text-lg hover:bg-gray-50 transition-colors"
               >
                 Log in
               </Link>
@@ -231,7 +219,7 @@ export default function Home() {
       </section>
 
       {/* Bento Grid Features */}
-      <section className="py-24 px-6 bg-white dark:bg-black">
+      <section className="py-24 px-6 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* 1. Slash Commands (Large, Dark) */}
@@ -332,17 +320,17 @@ export default function Home() {
             </div>
 
             {/* 2. Real Analytics (Tall, White) */}
-            <div className="md:col-span-1 group relative p-8 rounded-3xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 overflow-hidden hover:shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300 flex flex-col justify-between">
-              <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-emerald-50 dark:from-emerald-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="md:col-span-1 group relative p-8 rounded-3xl bg-white border border-gray-200 overflow-hidden hover:shadow-2xl hover:shadow-emerald-500/20 transition-all duration-300 flex flex-col justify-between">
+              <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-emerald-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
               <div className="relative z-10 w-full">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-4">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-600 mb-4">
                   <BarChart3 size={24} />
                 </div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">
+                <p className="text-xs font-semibold uppercase tracking-wider text-emerald-600 mb-1">
                   Metrics
                 </p>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
                   Real Analytics
                 </h3>
 
@@ -351,7 +339,7 @@ export default function Home() {
                   {[40, 70, 45, 90, 60].map((h, i) => (
                     <div
                       key={i}
-                      className="w-full h-full bg-emerald-50 dark:bg-emerald-900/20 rounded-t-md relative overflow-hidden group-hover:bg-emerald-100 dark:group-hover:bg-emerald-800/40 transition-colors"
+                      className="w-full h-full bg-emerald-50 rounded-t-md relative overflow-hidden group-hover:bg-emerald-100 transition-colors"
                     >
                       <div
                         className="absolute bottom-0 w-full bg-emerald-500 rounded-t-md transition-all duration-1000 ease-out"
@@ -365,12 +353,12 @@ export default function Home() {
                 </div>
 
                 {/* New Stats Summary */}
-                <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+                <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
                   <div>
                     <p className="text-[10px] uppercase tracking-wider font-semibold text-gray-400 mb-0.5">
                       Views
                     </p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">
+                    <p className="text-lg font-bold text-gray-900">
                       24.5k
                     </p>
                   </div>
@@ -392,26 +380,26 @@ export default function Home() {
             {/* Left Column Stack */}
             <div className="md:col-span-1 flex flex-col gap-4">
               {/* 3. Beautiful Themes */}
-              <div className="group relative p-6 rounded-3xl bg-purple-50 dark:bg-gray-900 border border-purple-100 dark:border-gray-800 overflow-hidden hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 flex-1">
+              <div className="group relative p-6 rounded-3xl bg-purple-50 border border-purple-100 overflow-hidden hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 flex-1">
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
                 <div className="relative z-10 flex items-center justify-between h-full">
                   <div>
-                    <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 mb-4">
                       <Palette size={20} />
                     </div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-1">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-purple-600 mb-1">
                       Design
                     </p>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                    <h3 className="text-lg font-bold text-gray-900">
                       Themes
                     </h3>
                   </div>
 
                   <div className="flex -space-x-3">
-                    <div className="w-10 h-10 rounded-full border-2 border-white dark:border-gray-900 bg-gradient-to-r from-blue-400 to-indigo-500 shadow-lg transform group-hover:-translate-x-1 transition-transform"></div>
-                    <div className="w-10 h-10 rounded-full border-2 border-white dark:border-gray-900 bg-gradient-to-r from-pink-400 to-rose-500 shadow-lg relative z-10 transform group-hover:scale-110 transition-transform"></div>
-                    <div className="w-10 h-10 rounded-full border-2 border-white dark:border-gray-900 bg-gradient-to-r from-amber-400 to-orange-500 shadow-lg transform group-hover:translate-x-1 transition-transform"></div>
+                    <div className="w-10 h-10 rounded-full border-2 border-white bg-gradient-to-r from-blue-400 to-indigo-500 shadow-lg transform group-hover:-translate-x-1 transition-transform"></div>
+                    <div className="w-10 h-10 rounded-full border-2 border-white bg-gradient-to-r from-pink-400 to-rose-500 shadow-lg relative z-10 transform group-hover:scale-110 transition-transform"></div>
+                    <div className="w-10 h-10 rounded-full border-2 border-white bg-gradient-to-r from-amber-400 to-orange-500 shadow-lg transform group-hover:translate-x-1 transition-transform"></div>
                   </div>
                 </div>
               </div>
@@ -451,21 +439,21 @@ export default function Home() {
             </div>
 
             {/* 5. Lightning Fast (Tall Right Column) - Compacted */}
-            <div className="md:col-span-2 group relative p-6 rounded-3xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 overflow-hidden hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-300 flex flex-col justify-between">
-              <div className="absolute right-0 top-0 w-3/4 h-full bg-gradient-to-l from-orange-50 dark:from-orange-900/10 to-transparent"></div>
+            <div className="md:col-span-2 group relative p-6 rounded-3xl bg-white border border-gray-200 overflow-hidden hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-300 flex flex-col justify-between">
+              <div className="absolute right-0 top-0 w-3/4 h-full bg-gradient-to-l from-orange-50 to-transparent"></div>
 
               <div className="relative z-10 flex items-start justify-between">
                 <div>
-                  <div className="w-12 h-12 rounded-2xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-600 dark:text-orange-400 mb-4">
+                  <div className="w-12 h-12 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-600 mb-4">
                     <Zap size={24} />
                   </div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-orange-600 dark:text-orange-400 mb-1">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-orange-600 mb-1">
                     Performance
                   </p>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
                     Lightning Fast
                   </h3>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed max-w-[90%]">
+                  <p className="text-gray-500 text-sm leading-relaxed max-w-[90%]">
                     A lightweight React renderer keeps load time low, so your
                     forms load fast on any connection.
                   </p>
@@ -486,12 +474,12 @@ export default function Home() {
               </div>
 
               {/* Speed Metrics Visual */}
-              <div className="relative w-full mt-6 bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 flex items-center justify-between group-hover:border-orange-500/30 transition-colors">
-                <div className="flex-1 pr-4 border-r border-gray-200 dark:border-gray-700">
+              <div className="relative w-full mt-6 bg-gray-50 rounded-2xl p-4 border border-gray-100 flex items-center justify-between group-hover:border-orange-500/30 transition-colors">
+                <div className="flex-1 pr-4 border-r border-gray-200">
                   <p className="text-xs text-gray-500 uppercase font-semibold mb-1">
                     Load Time
                   </p>
-                  <div className="text-3xl font-mono font-bold text-gray-900 dark:text-white flex items-baseline">
+                  <div className="text-3xl font-mono font-bold text-gray-900 flex items-baseline">
                     0.2<span className="text-sm text-gray-400 ml-1">s</span>
                   </div>
                 </div>
@@ -499,7 +487,7 @@ export default function Home() {
                   <p className="text-xs text-gray-500 uppercase font-semibold mb-2">
                     Performance
                   </p>
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+                  <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                     <div className="bg-green-500 h-full w-[98%] rounded-full shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
                   </div>
                   <div className="flex justify-between mt-1">
@@ -515,19 +503,19 @@ export default function Home() {
             </div>
 
             {/* 6. Block Types (Span 3 / Full Width) */}
-            <div className="md:col-span-3 group relative p-10 rounded-3xl bg-blue-50 dark:bg-gray-900 border border-blue-100 dark:border-gray-800 overflow-hidden hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300">
+            <div className="md:col-span-3 group relative p-10 rounded-3xl bg-blue-50 border border-blue-100 overflow-hidden hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300">
               <div className="absolute inset-0 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)] opacity-10 group-hover:opacity-20 transition-opacity"></div>
 
               <div className="relative z-10 flex flex-col items-center text-center">
-                <div className="w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 mb-6">
+                <div className="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-600 mb-6">
                   <Type size={28} />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
                   Twelve Block Types, One Slash
                 </h3>
-                <p className="text-gray-500 dark:text-gray-400 text-lg max-w-2xl mb-12">
+                <p className="text-gray-500 text-lg max-w-2xl mb-12">
                   Short & long answers, choice groups, dates, file uploads,
-                  ratings and more — all added by typing <code className="mx-1 px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded font-mono text-indigo-600 font-semibold">/</code>.
+                  ratings and more — all added by typing <code className="mx-1 px-2 py-0.5 bg-gray-100 rounded font-mono text-indigo-600 font-semibold">/</code>.
                 </p>
 
                 {/* Block Type Chips */}
@@ -548,7 +536,7 @@ export default function Home() {
                   ].map((label) => (
                     <span
                       key={label}
-                      className="bg-white dark:bg-gray-800 px-4 py-2.5 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 font-semibold text-sm text-gray-700 dark:text-gray-200 group-hover:scale-105 transition-transform"
+                      className="bg-white px-4 py-2.5 rounded-xl shadow-lg border border-gray-100 font-semibold text-sm text-gray-700 group-hover:scale-105 transition-transform"
                     >
                       {label}
                     </span>
@@ -564,14 +552,14 @@ export default function Home() {
       <section className="py-24 px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
           <div className="flex-1 text-left space-y-6">
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-3xl md:text-5xl font-bold text-gray-900">
               Designed for{" "}
-              <span className="text-indigo-600 dark:text-indigo-400">Flow</span>
+              <span className="text-indigo-600">Flow</span>
             </h2>
-            <p className="text-lg text-gray-500 dark:text-gray-400">
+            <p className="text-lg text-gray-500">
               We removed the clutter found in traditional form builders. No
               dragging complex sidebars. Just type
-              <code className="mx-2 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded font-mono text-indigo-600 font-bold">
+              <code className="mx-2 px-2 py-1 bg-gray-100 rounded font-mono text-indigo-600 font-bold">
                 /
               </code>
               and start creating.
@@ -585,7 +573,7 @@ export default function Home() {
               ].map((item, i) => (
                 <li
                   key={i}
-                  className="flex items-center gap-3 text-gray-700 dark:text-gray-300"
+                  className="flex items-center gap-3 text-gray-700"
                 >
                   <CheckCircle2 size={20} className="text-indigo-500" />
                   {item}
@@ -599,7 +587,7 @@ export default function Home() {
             <img
               src={thoughtfulGirl}
               alt="Designing interface"
-              className="w-full max-w-md mx-auto drop-shadow-2xl dark:invert"
+              className="w-full max-w-md mx-auto drop-shadow-2xl"
             />
           </div>
         </div>
@@ -608,47 +596,47 @@ export default function Home() {
       {/* New Section: Instant Insights */}
       <section
         ref={insightsRef}
-        className="py-24 px-6 bg-white dark:bg-gray-900/50 overflow-hidden"
+        className="py-24 px-6 bg-white overflow-hidden"
       >
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row-reverse items-center gap-16">
           <div className="flex-1 text-left space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-semibold uppercase tracking-wide">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 text-green-600 text-xs font-semibold uppercase tracking-wide">
               <BarChart3 size={12} />
               Response Analytics
             </div>
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-3xl md:text-5xl font-bold text-gray-900">
               Instant{" "}
-              <span className="text-green-600 dark:text-green-400">
+              <span className="text-green-600">
                 Insights
               </span>
             </h2>
-            <p className="text-lg text-gray-500 dark:text-gray-400">
+            <p className="text-lg text-gray-500">
               Watch your responses come in and visualize trends over time.
               Understand which forms perform best without setting up complex
               dashboards.
             </p>
             <div className="flex flex-col gap-3 pt-2">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-green-600 dark:text-green-400 font-bold">
+                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold">
                   1
                 </div>
-                <p className="text-gray-700 dark:text-gray-300 font-medium">
+                <p className="text-gray-700 font-medium">
                   Publish in one click
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-green-600 dark:text-green-400 font-bold">
+                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold">
                   2
                 </div>
-                <p className="text-gray-700 dark:text-gray-300 font-medium">
+                <p className="text-gray-700 font-medium">
                   Share the link anywhere
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-green-600 dark:text-green-400 font-bold">
+                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold">
                   3
                 </div>
-                <p className="text-gray-700 dark:text-gray-300 font-medium">
+                <p className="text-gray-700 font-medium">
                   Analyze results instantly
                 </p>
               </div>
@@ -657,15 +645,15 @@ export default function Home() {
 
           <div className="flex-1 relative">
             {/* CSS Chart Visual */}
-            <div className="relative w-full max-w-md mx-auto aspect-square bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 p-8 flex flex-col justify-between z-10">
+            <div className="relative w-full max-w-md mx-auto aspect-square bg-white rounded-2xl shadow-2xl border border-gray-100 p-8 flex flex-col justify-between z-10">
               <div className="flex justify-between items-center mb-8">
                 <div>
                   <div className="text-sm text-gray-400">Total Responses</div>
-                  <div className="text-3xl font-bold text-gray-900 dark:text-white">
+                  <div className="text-3xl font-bold text-gray-900">
                     {totalResponses.toLocaleString()}
                   </div>
                 </div>
-                <div className="px-3 py-1 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full text-xs font-bold mr-12">
+                <div className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-xs font-bold mr-12">
                   +{growthRate}%
                 </div>
               </div>
@@ -674,7 +662,7 @@ export default function Home() {
                 {chartHeights.map((h, i) => (
                   <div
                     key={i}
-                    className="w-full h-full bg-gray-100 dark:bg-gray-700 rounded-t-lg relative group overflow-hidden"
+                    className="w-full h-full bg-gray-100 rounded-t-lg relative group overflow-hidden"
                   >
                     <div
                       className="absolute bottom-0 left-0 w-full bg-green-500 transition-all duration-700 ease-in-out group-hover:bg-green-400"
@@ -697,15 +685,15 @@ export default function Home() {
 
             {/* Floating Badge: Conversion Rate */}
             <div
-              className={`absolute -right-4 top-10 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-1000 z-20 ease-out delay-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
+              className={`absolute -right-4 top-10 bg-white p-4 rounded-xl shadow-xl border border-gray-100 transition-all duration-1000 z-20 ease-out delay-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-blue-600">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
                   <Zap size={16} />
                 </div>
                 <div>
                   <div className="text-xs text-gray-400">Conversion Rate</div>
-                  <div className="font-bold text-gray-900 dark:text-white">
+                  <div className="font-bold text-gray-900">
                     {conversionRate.toFixed(1)}%
                   </div>
                 </div>
@@ -714,15 +702,15 @@ export default function Home() {
 
             {/* Floating Badge: Avg Time */}
             <div
-              className={`absolute -left-6 bottom-20 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-1000 z-20 ease-out delay-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
+              className={`absolute -left-6 bottom-20 bg-white p-4 rounded-xl shadow-xl border border-gray-100 transition-all duration-1000 z-20 ease-out delay-500 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center text-orange-600">
+                <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-600">
                   <Clock size={16} />
                 </div>
                 <div>
                   <div className="text-xs text-gray-400">Avg. Completion</div>
-                  <div className="font-bold text-gray-900 dark:text-white">
+                  <div className="font-bold text-gray-900">
                     {Math.floor(avgTime / 60)}m {avgTime % 60}s
                   </div>
                 </div>
@@ -731,15 +719,15 @@ export default function Home() {
 
             {/* Floating Badge: Active Forms */}
             <div
-              className={`absolute -right-2 bottom-4 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-1000 z-20 ease-out delay-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
+              className={`absolute -right-2 bottom-4 bg-white p-4 rounded-xl shadow-xl border border-gray-100 transition-all duration-1000 z-20 ease-out delay-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center text-purple-600">
+                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-600">
                   <Activity size={16} />
                 </div>
                 <div>
                   <div className="text-xs text-gray-400">Active Forms</div>
-                  <div className="font-bold text-gray-900 dark:text-white">
+                  <div className="font-bold text-gray-900">
                     {activeForms}
                   </div>
                 </div>
@@ -753,17 +741,17 @@ export default function Home() {
       <section className="py-24 px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
           <div className="flex-1 text-left space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-xs font-semibold uppercase tracking-wide">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 text-purple-600 text-xs font-semibold uppercase tracking-wide">
               <Palette size={12} />
               Customization
             </div>
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-3xl md:text-5xl font-bold text-gray-900">
               Make it{" "}
-              <span className="text-purple-600 dark:text-purple-400">
+              <span className="text-purple-600">
                 Yours
               </span>
             </h2>
-            <p className="text-lg text-gray-500 dark:text-gray-400">
+            <p className="text-lg text-gray-500">
               Your form, your brand. Pick a cover color that fits, with more
               theme options on the way.
             </p>
@@ -779,7 +767,7 @@ export default function Home() {
                 <button
                   key={i}
                   onClick={() => setActiveTheme(color)}
-                  className={`w-12 h-12 rounded-full border-4 shadow-lg hover:scale-110 transition-transform cursor-pointer ${activeTheme === color ? "border-gray-900 dark:border-white scale-110 ring-2 ring-offset-2 ring-gray-400" : "border-white dark:border-gray-900"}`}
+                  className={`w-12 h-12 rounded-full border-4 shadow-lg hover:scale-110 transition-transform cursor-pointer ${activeTheme === color ? "border-gray-900 scale-110 ring-2 ring-offset-2 ring-gray-400" : "border-white"}`}
                   style={{ backgroundColor: color }}
                   aria-label={`Select color ${color}`}
                 />
@@ -787,7 +775,7 @@ export default function Home() {
             </div>
           </div>
           <div className="flex-1 relative">
-            <div className="relative w-full max-w-md mx-auto aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden p-6 flex flex-col">
+            <div className="relative w-full max-w-md mx-auto aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-50 rounded-2xl shadow-2xl border border-gray-200 overflow-hidden p-6 flex flex-col">
               {/* Mock Browser/Form Header */}
               <div
                 className="h-64 rounded-xl shadow-inner mb-6 transition-colors duration-500 relative group overflow-hidden"
@@ -799,12 +787,12 @@ export default function Home() {
                 </div>
               </div>
               {/* Mock Input */}
-              <div className="h-12 w-full bg-white dark:bg-black rounded-lg border border-transparent shadow-sm px-4 flex items-center text-gray-400 text-sm">
+              <div className="h-12 w-full bg-white rounded-lg border border-transparent shadow-sm px-4 flex items-center text-gray-400 text-sm">
                 Type your answer here...
               </div>
             </div>
             {/* Floating Palette Tool */}
-            <div className="absolute -left-8 -bottom-8 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 animate-pulse">
+            <div className="absolute -left-8 -bottom-8 bg-white p-4 rounded-2xl shadow-xl border border-gray-100 animate-pulse">
               <div className="grid grid-cols-2 gap-2">
                 <div className="w-8 h-8 rounded-lg bg-indigo-500"></div>
                 <div className="w-8 h-8 rounded-lg bg-pink-500"></div>
@@ -845,11 +833,11 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-black">
-        <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500 dark:text-gray-400">
+      <footer className="border-t border-gray-100 bg-white">
+        <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
           <div className="flex items-center gap-2">
             <Logo size={20} />
-            <span className="font-semibold text-gray-900 dark:text-white">
+            <span className="font-semibold text-gray-900">
               Formium
             </span>
             <span>© {new Date().getFullYear()}</span>
@@ -860,7 +848,7 @@ export default function Home() {
               href="https://github.com/priyanshuwalia/"
               target="_blank"
               rel="noreferrer"
-              className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-medium text-gray-900 dark:text-gray-300"
+              className="hover:text-indigo-600 transition-colors font-medium text-gray-900"
             >
               Priyanshu Walia
             </a>

@@ -55,12 +55,12 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="flex min-h-screen w-screen items-center justify-center bg-gray-100 dark:bg-gray-900 p-4 font-inter">
-      <div className="w-full max-w-md rounded-2xl bg-white dark:bg-gray-800 p-8 shadow-2xl lg:p-12">
-        <h1 className="text-3xl font-extrabold text-zinc-800 dark:text-white">
+    <div className="flex min-h-screen w-screen items-center justify-center bg-gray-100 p-4 font-inter">
+      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl lg:p-12">
+        <h1 className="text-3xl font-extrabold text-zinc-800">
           {token ? "Set a new password" : "Reset your password"}
         </h1>
-        <p className="mt-2 text-sm text-zinc-500 dark:text-gray-400">
+        <p className="mt-2 text-sm text-zinc-500">
           {token
             ? "Choose a new password for your account."
             : "We'll email you a link to reset your password."}
@@ -101,7 +101,7 @@ const ResetPassword = () => {
               autoComplete="email"
             />
             {message && (
-              <p className="text-sm text-green-600 dark:text-green-400">{message}</p>
+              <p className="text-sm text-green-600">{message}</p>
             )}
             {error && <p className="text-sm text-red-500">{error}</p>}
             <button
@@ -117,7 +117,7 @@ const ResetPassword = () => {
         <div className="mt-6 text-center text-sm text-gray-500">
           <Link
             to="/login"
-            className="font-semibold text-gray-700 dark:text-white underline hover:text-blue-800 dark:hover:text-blue-400"
+            className="font-semibold text-gray-700 underline hover:text-blue-800"
           >
             Back to login
           </Link>
