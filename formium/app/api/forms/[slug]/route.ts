@@ -25,8 +25,8 @@ export async function GET(
     const form = await getFormBySlug(slug);
     if (!form) return apiError("Form not found", 404);
     return NextResponse.json(form);
-  } catch (err: any) {
-    return apiError(err.message || "Failed to fetch form", 500);
+  } catch (err) {
+    return apiError(err instanceof Error ? err.message : "Failed to fetch form", 500);
   }
 }
 
@@ -52,8 +52,8 @@ export async function PUT(
   try {
     await updateFormById(resolved.id, userId, parsed.data);
     return NextResponse.json({ message: "Form updated successfully" });
-  } catch (err: any) {
-    return apiError(err.message || "Failed to update form", 500);
+  } catch (err) {
+    return apiError(err instanceof Error ? err.message : "Failed to update form", 500);
   }
 }
 
@@ -73,7 +73,7 @@ export async function DELETE(
   try {
     await deleteFormById(resolved.id, userId);
     return NextResponse.json({ message: "Form deleted successfully" });
-  } catch (err: any) {
-    return apiError(err.message || "Failed to delete form", 500);
+  } catch (err) {
+    return apiError(err instanceof Error ? err.message : "Failed to delete form", 500);
   }
 }

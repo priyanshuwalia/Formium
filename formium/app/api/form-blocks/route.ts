@@ -14,9 +14,9 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const block = await createFormBlock(parsed.data as any);
+    const block = await createFormBlock(parsed.data);
     return NextResponse.json(block, { status: 201 });
-  } catch (err: any) {
-    return apiError(err.message || "Failed to create block", 500);
+  } catch (err) {
+    return apiError(err instanceof Error ? err.message : "Failed to create block", 500);
   }
 }

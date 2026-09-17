@@ -8,9 +8,28 @@ interface ResponseDetailsPageProps {
     params: Promise<{ slug: string; responseId: string }>;
 }
 
+interface ResponseDetailItem {
+    id: string;
+    blockId: string;
+    value: string;
+}
+
+interface ResponseDetailBlock {
+    id: string;
+    type: string;
+    label: string;
+}
+
+interface ResponseDetailsData {
+    id: string;
+    createdAt: string;
+    items: ResponseDetailItem[];
+    form: { blocks: ResponseDetailBlock[] };
+}
+
 const ResponseDetails: React.FC<ResponseDetailsPageProps> = ({ params }) => {
     const { slug, responseId } = React.use(params);
-    const [data, setData] = useState<any>(null);
+    const [data, setData] = useState<ResponseDetailsData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -18,7 +37,7 @@ const ResponseDetails: React.FC<ResponseDetailsPageProps> = ({ params }) => {
         const fetchDetails = async () => {
             try {
                 if (!responseId) return;
-                const res = await apiFetch(`/response/detail/${responseId}`);
+                const res = await apiFetch<ResponseDetailsData>(`/response/detail/${responseId}`);
                 setData(res);
             } catch (err) {
                 console.error(err);
@@ -46,7 +65,7 @@ const ResponseDetails: React.FC<ResponseDetailsPageProps> = ({ params }) => {
     const blocks = form.blocks;
 
     const getAnswer = (blockId: string) => {
-        const item = items.find((i: any) => i.blockId === blockId);
+        const item = items.find((i) => i.blockId === blockId);
         return item ? item.value : "No answer";
     };
 
@@ -71,7 +90,7 @@ const ResponseDetails: React.FC<ResponseDetailsPageProps> = ({ params }) => {
             </header>
 
             <div className="max-w-3xl mx-auto space-y-6">
-                {blocks.map((block: any) => {
+                {blocks.map((block) => {
                     if (['H3', 'DIVIDER'].includes(block.type)) {
                         if (block.type === 'H3') return <h3 key={block.id} className="text-xl font-bold mt-8 mb-4 border-b pb-2 dark:border-gray-800 dark:text-white">{block.label}</h3>;
                         return <hr key={block.id} className="my-6 border-gray-200 dark:border-gray-800" />;

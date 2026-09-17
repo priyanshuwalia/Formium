@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getCurrentUserId, requireUser } from "@/lib/auth";
 import { createCheckoutSession, isBillingConfigured } from "@/lib/stripe";
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   if (!isBillingConfigured()) {
     return NextResponse.json(
       { error: "Billing is not configured" },
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       `${base}/settings?upgrade=cancelled`,
     );
     return NextResponse.json({ url });
-  } catch (err: any) {
+  } catch (err) {
     console.error("Stripe checkout failed:", err);
     return NextResponse.json({ error: "Failed to start checkout" }, { status: 500 });
   }

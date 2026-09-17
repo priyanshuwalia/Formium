@@ -20,19 +20,19 @@ export async function PUT(req: NextRequest) {
       select: { id: true, email: true, name: true, bio: true, profilePicture: true },
     });
     return NextResponse.json(user);
-  } catch (err: any) {
-    return apiError(err.message || "Failed to update profile", 500);
+  } catch (err) {
+    return apiError(err instanceof Error ? err.message : "Failed to update profile", 500);
   }
 }
 
-export async function DELETE(req: NextRequest) {
+export async function DELETE() {
   const userId = await getCurrentUserId();
   if (!userId) return apiError("Unauthorized", 401);
 
   try {
     await prisma.user.delete({ where: { id: userId } });
     return NextResponse.json({ message: "Account deleted successfully" });
-  } catch (err: any) {
-    return apiError(err.message || "Failed to delete account", 500);
+  } catch (err) {
+    return apiError(err instanceof Error ? err.message : "Failed to delete account", 500);
   }
 }

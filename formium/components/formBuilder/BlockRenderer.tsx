@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { type BlockType, type FormBlock } from "@/lib/types";
+import type { DraggableAttributes, DraggableSyntheticListeners } from "@dnd-kit/core";
 import {
   Trash,
   Calendar,
@@ -15,7 +16,7 @@ interface BlockRendererProps {
   onChange: (id: string, updated: Partial<FormBlock>) => void;
   onDelete: (id: string) => void;
   onEnter: () => void;
-  dragHandleProps?: { listeners?: Record<string, any>; attributes?: Record<string, any> };
+  dragHandleProps?: { listeners?: DraggableSyntheticListeners; attributes?: DraggableAttributes };
   availableBlocks?: FormBlock[];
   allBlocks?: FormBlock[];
 }
@@ -23,21 +24,27 @@ interface BlockRendererProps {
 const LOGIC_TYPES: BlockType[] = ["SHORT_ANS", "MULT_CHOICE", "CHECKBOXES", "DROPDOWN"];
 const CHOICE_TYPES: BlockType[] = ["MULT_CHOICE", "CHECKBOXES", "DROPDOWN"];
 
+const DividerBlock = () => (
+  <hr className="my-6 border-t border-gray-200 dark:border-gray-800" />
+);
+
+const HeadingBlock = ({
+  block,
+  onChange,
+}: {
+  block: FormBlock;
+  onChange: BlockRendererProps["onChange"];
+}) => (
+  <input
+    type="text"
+    value={block.label}
+    onChange={(e) => onChange(block.id, { label: e.target.value })}
+    className="text-2xl font-bold w-full bg-transparent border-none focus:ring-0 focus:outline-none placeholder-gray-300 dark:placeholder-gray-600 text-gray-900 dark:text-white mb-2"
+    placeholder="Heading 3"
+  />
+);
+
 const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, availableBlocks, allBlocks }: BlockRendererProps) => {
-  if (block.type === "DIVIDER") {
-    return <hr className="my-6 border-t border-gray-200 dark:border-gray-800" />;
-  }
-  if (block.type === "H3") {
-    return (
-      <input
-        type="text"
-        value={block.label}
-        onChange={(e) => onChange(block.id, { label: e.target.value })}
-        className="text-2xl font-bold w-full bg-transparent border-none focus:ring-0 focus:outline-none placeholder-gray-300 dark:placeholder-gray-600 text-gray-900 dark:text-white mb-2"
-        placeholder="Heading 3"
-      />
-    );
-  }
   const [hoverRating, setHoverRating] = useState(0);
   const [selectedRating, setSelectedRating] = useState(0);
   const [options, setOptions] = useState(block.options || ["Option 1"]);
@@ -52,6 +59,13 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, av
       inputRef.current.style.height = inputRef.current.scrollHeight + "px";
     }
   }, [block.label]);
+
+  if (block.type === "DIVIDER") {
+    return <DividerBlock />;
+  }
+  if (block.type === "H3") {
+    return <HeadingBlock block={block} onChange={onChange} />;
+  }
 
   const blocks = allBlocks || availableBlocks || [];
   const currentIndex = blocks.findIndex((b) => b.id === block.id);

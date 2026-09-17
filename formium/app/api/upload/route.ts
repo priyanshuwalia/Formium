@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
   try {
     const uploadUrl = await createUploadUrl(key, contentType);
     return NextResponse.json({ uploadUrl, key });
-  } catch (err: any) {
+  } catch (err) {
     console.error("Failed to create upload URL:", err);
     return NextResponse.json(
       { error: "Failed to create upload URL" },

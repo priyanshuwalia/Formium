@@ -36,8 +36,8 @@ const CompleteProfile: React.FC = () => {
       });
       await refreshUser();
       router.push("/home");
-    } catch (err: any) {
-      setError(err.message || "Failed to update profile.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update profile.");
     } finally {
       setLoading(false);
     }
@@ -53,7 +53,7 @@ const CompleteProfile: React.FC = () => {
           Welcome to Formium!
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-          Let's get to know you a little better before we start.
+          Let&apos;s get to know you a little better before we start.
         </p>
       </div>
 

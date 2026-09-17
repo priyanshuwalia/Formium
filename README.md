@@ -17,7 +17,6 @@
   <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" alt="React">
   <img src="https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js">
   <img src="https://img.shields.io/badge/node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js">
-  <img src="https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB" alt="Express.js">
   <img src="https://img.shields.io/badge/postgres-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
   <img src="https://img.shields.io/badge/prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma">
   <img src="https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
@@ -27,7 +26,7 @@
 
 ## Overview
 
-Formium is a form builder that lets you create, publish, and collect responses for custom forms using a slash-command editor. Type `/` to add any block type — short answers, multiple choice, dates, ratings, file uploads, and more — then publish and share a link. Every form gets its own response table and analytics.
+Formium is a form builder that lets you create, publish, and collect responses for custom forms using a slash-command editor. Type `/` to add any block type — short answers, multiple choice, dates, ratings, file uploads, and more — then publish and share a link. Every form gets its own response table, analytics, and AI-powered insights.
 
 ---
 
@@ -35,9 +34,9 @@ Formium is a form builder that lets you create, publish, and collect responses f
 
 | Directory | Description |
 |---|---|
-| `formium/` | Next.js 16 app (App Router) — the consolidated product frontend + API |
-| `backend/` | Express 5 + Prisma API (being migrated into `formium/app/api/`) |
-| `frontend/` | Legacy Vite + React 19 SPA (being consolidated into `formium/`) |
+| `formium/` | Single Next.js 16 app (App Router) — UI + API + background/realtime concerns |
+
+The previous Express + Prisma backend and Vite frontend have been consolidated into `formium/`. All API routes live as Next.js Route Handlers under `formium/app/api/`.
 
 ---
 
@@ -45,7 +44,7 @@ Formium is a form builder that lets you create, publish, and collect responses f
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 22+
 - PostgreSQL (or Docker)
 - npm
 
@@ -58,30 +57,33 @@ Formium is a form builder that lets you create, publish, and collect responses f
    cd Formium
    ```
 
-2. Set up the database:
+2. Set up the app:
 
    ```sh
-   cd backend
-   cp example.env .env
-   # fill in DATABASE_URL, JWT_SECRET, PORT
+   cd formium
+   cp .env.example .env
+   # fill in DATABASE_URL, JWT_SECRET, and the optional integrations you need
+   npm install
    npx prisma migrate dev
    ```
 
-3. Run the API:
+3. Run the dev server:
 
    ```sh
-   npm install
    npm run dev
    ```
 
-4. Run the frontend:
+   Then open http://localhost:3000.
 
-   ```sh
-   cd ../frontend
-   cp .env.example .env  # or create .env with VITE_GOOGLE_CLIENT_ID and VITE_API_BASE_URL
-   npm install
-   npm run dev
-   ```
+### Commands
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Next.js dev server |
+| `npm run build` | Production build |
+| `npm start` | Run production build |
+| `npm run lint` | ESLint (0 warnings/errors enforced) |
+| `npm test` | Vitest unit tests |
 
 ---
 
@@ -89,10 +91,17 @@ Formium is a form builder that lets you create, publish, and collect responses f
 
 - **Slash-command form builder** — type `/` to insert any block type
 - **12 block types** — short/long answers, multiple choice, checkboxes, dropdown, number, email, phone, link, date, rating, file upload
-- **Publish & share** — each form gets a unique slug URL
-- **Responses** — per-form response tables with detail views
+- **Drag-and-drop editor** — reorder blocks with dnd-kit (drag the grip, then drop)
+- **Logic jumps** — conditionally show blocks based on earlier answers
+- **Publish & share** — each form gets a unique slug URL + embed widget (`<iframe>`)
+- **Responses** — per-form response tables, detail views, and CSV export
 - **Analytics** — response counts, 7-day trends, top-performing forms
-- **Auth** — email/password (bcrypt) + Google sign-in (GSI), JWT sessions
+- **AI Response Intelligence** — one-click Claude summary, themes, and notable responses
+- **Auth** — email/password (bcrypt) + Google sign-in, httpOnly cookie JWT sessions with refresh tokens
+- **Billing** — Stripe subscriptions (Free/Pro tiers) with plan limits
+- **File uploads** — Cloudflare R2 presigned uploads (Pro plan)
+- **Email** — Resend transactional email (new-response notifications)
+- **Error tracking** — Sentry
 - **Dark mode** — light/dark theme toggle
 - **Templates** — quick-start contact, event registration, and feedback templates
 
@@ -100,14 +109,30 @@ Formium is a form builder that lets you create, publish, and collect responses f
 
 ## API
 
-The API is documented under `backend/src/modules/`. Route groups:
+Route Handlers under `formium/app/api/`:
 
-- `/api/auth` — register, login, google
-- `/api/forms` — create, list, get by slug, update, delete
-- `/api/form-blocks` — CRUD for blocks
-- `/api/response` — submit and read responses
+- `/api/auth/*` — register, login, google, logout, me
+- `/api/forms` — create; `/api/forms/[slug]` — get/update/delete; `/api/forms/dashboard` — list
+- `/api/form-blocks` and `/api/form-blocks/[id]` — CRUD for blocks
+- `/api/response` — submit; `/api/response/[formId]`, `/api/response/detail/[id]` — read; `/api/response/export` — CSV
 - `/api/analytics` — aggregate stats
+- `/api/ai/analyze` — AI response intelligence
+- `/api/billing/checkout` / `portal` / `webhook` / `status` — Stripe billing
+- `/api/upload` — R2 presigned upload URL
 - `/api/user` — profile update/delete
+
+---
+
+## Environment (see `.env.example`)
+
+`DATABASE_URL`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, `RESEND_API_KEY`, `R2_*` (endpoint/access key/secret/bucket), `SENTRY_*`, `STRIPE_*`, `ANTHROPIC_API_KEY`.
+
+---
+
+## Testing & CI
+
+- Vitest unit tests in `formium/tests/` cover auth, form service, and validation logic.
+- GitHub Actions workflow (`.github/workflows/ci.yml`) runs lint, typecheck, tests, and build.
 
 ---
 

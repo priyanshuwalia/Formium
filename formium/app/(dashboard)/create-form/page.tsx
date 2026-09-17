@@ -4,7 +4,6 @@ import SlashCommand from "@/components/formBuilder/SlashCommand";
 import { type BlockType, type FormBlock } from "@/lib/types";
 import { v4 as uuid } from "uuid";
 import { Plus, File, Palette, ArrowRight, Trash } from "lucide-react";
-import BlockRenderer from "@/components/formBuilder/BlockRenderer";
 import SortableBlock from "@/components/formBuilder/SortableBlock";
 import { apiFetch } from "@/services/api";
 import { useAuth } from "@/context/auth/authContext";
@@ -108,10 +107,14 @@ const CreateForm: React.FC = () => {
       const title = prompt("Please enter a title for your form:", "Untitled Form");
       if (!title || title.trim() === "") return;
       setFormTitle(title);
-      var finalTitle = title;
+      const finalTitle = title;
+      await publishFormWithTitle(finalTitle);
     } else {
-      var finalTitle = formTitle;
+      await publishFormWithTitle(formTitle);
     }
+  };
+
+  const publishFormWithTitle = async (finalTitle: string) => {
 
     setPublishing(true);
     console.log('Publish was clicked');
@@ -124,7 +127,7 @@ const CreateForm: React.FC = () => {
 
     try {
       console.log("Sending form creation payload:", payload);
-      const form = await apiFetch<any>("/forms", {
+      const form = await apiFetch<{ id: string; slug: string }>("/forms", {
         method: "POST",
         body: JSON.stringify(payload),
       });
@@ -156,9 +159,9 @@ const CreateForm: React.FC = () => {
         console.log("No slug found");
         alert("Form created, but could not get the shareable link.");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.log("Error publishing form:", error);
-      alert(`Failed to publish form: ${error.message || "Unknown error"}`);
+      alert(`Failed to publish form: ${error instanceof Error ? error.message : "Unknown error"}`);
     } finally {
       setPublishing(false);
     }

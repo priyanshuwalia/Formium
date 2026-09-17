@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
       );
     }
     return NextResponse.json({ result });
-  } catch (err: any) {
+  } catch (err) {
     console.error("AI route error:", err);
     return NextResponse.json({ error: "Analysis failed" }, { status: 500 });
   }

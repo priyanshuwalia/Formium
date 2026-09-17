@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { googleLogin } from "@/lib/services/auth";
+import { googleLogin, AuthError } from "@/lib/services/auth";
 import { googleSchema, apiError } from "@/lib/validations";
 import { setAuthCookies } from "@/lib/auth";
 
@@ -23,7 +23,9 @@ export async function POST(req: NextRequest) {
     });
     await setAuthCookies(user.id);
     return res;
-  } catch (err: any) {
-    return apiError(err.message || "Google login failed", 401);
+  } catch (err) {
+    if (err instanceof AuthError) return apiError(err.message, 401);
+    console.error("Google login error:", err);
+    return apiError("Google login failed", 500);
   }
 }
