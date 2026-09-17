@@ -53,8 +53,8 @@
     "@prisma/client@6.10.1": true,
     "@prisma/engines@6.10.1": true,
     "bcrypt@6.0.0": true,
-    "esbuild@0.25.5": true,
     "fsevents@2.3.3": true,
-    "prisma@6.10.1": true
+    "prisma@6.10.1": true,
+    "esbuild@0.25.5": true
   }
 }
