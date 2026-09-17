@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { loginWithGoogle, registerUser } from "../../api/auth";
 import { useAuth } from "../../context/AuthContext";
 import Input from "../../components/Input";
+import { getErrorMessage } from "../../utils/apiError";
 import thoughtfulGirl from "../../assets/open-doodles-reading-side.gif";
 import GoogleAuthButton from "../../components/GoogleAuthButton";
 
@@ -33,10 +34,8 @@ const Register: React.FC = () => {
       const res = await registerUser(email, password);
       login(res.data.token, res.data.user);
       navigate("/complete-profile");
-    } catch (err: any) {
-      setError(
-        err.response?.data?.error || "Registration failed. Please try again.",
-      );
+    } catch (err) {
+      setError(getErrorMessage(err, "Registration failed. Please try again."));
     } finally {
       setLoading(false);
     }

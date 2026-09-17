@@ -5,7 +5,8 @@ export const createFormHandler = async (req, res) => {
         res.status(201).json(form);
     }
     catch (err) {
-        res.status(400).json({ error: "Failed to create form", details: err });
+        console.error("Create form error:", err);
+        res.status(400).json({ error: "Failed to create form" });
     }
 };
 export const getFormHandler = async (req, res) => {
@@ -18,7 +19,8 @@ export const getFormHandler = async (req, res) => {
         res.json(form);
     }
     catch (err) {
-        res.status(500).json({ error: "failed to fetch form", details: err });
+        console.error("Fetch form error:", err);
+        res.status(500).json({ error: "Failed to fetch form" });
     }
 };
 export const getUserFormsHandler = async (req, res) => {
@@ -32,7 +34,8 @@ export const getUserFormsHandler = async (req, res) => {
         res.json(forms);
     }
     catch (err) {
-        res.status(500).json({ error: "Failed to fetch forms", details: err });
+        console.error("Fetch user forms error:", err);
+        res.status(500).json({ error: "Failed to fetch forms" });
     }
 };
 export const updateFormHandler = async (req, res) => {
@@ -48,7 +51,8 @@ export const updateFormHandler = async (req, res) => {
         res.json({ message: "Form updated successfully." });
     }
     catch (err) {
-        res.status(500).json({ error: "Failed to update Form", details: err });
+        console.error("Update form error:", err);
+        res.status(500).json({ error: "Failed to update form" });
     }
 };
 export const deleteFormHandler = async (req, res) => {
@@ -63,6 +67,7 @@ export const deleteFormHandler = async (req, res) => {
         res.json({ message: "Form Deleted successfully" });
     }
     catch (err) {
-        res.status(500).json({ error: "Failed to delete form", details: err });
+        console.error("Delete form error:", err);
+        res.status(500).json({ error: "Failed to delete form" });
     }
 };

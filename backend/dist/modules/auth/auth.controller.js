@@ -1,4 +1,14 @@
 import * as AuthService from "./auth.service.js";
+import { AuthError } from "./auth.service.js";
+const GENERIC_ERROR = "Something went wrong. Please try again.";
+const handleError = (res, err, context) => {
+    if (err instanceof AuthError) {
+        res.status(err.status).json({ error: err.message });
+        return;
+    }
+    console.error(`${context} error:`, err);
+    res.status(500).json({ error: GENERIC_ERROR });
+};
 export const register = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -6,7 +16,7 @@ export const register = async (req, res) => {
         res.status(201).json(user);
     }
     catch (err) {
-        res.status(400).json({ error: err.message });
+        handleError(res, err, "Register");
     }
 };
 export const login = async (req, res) => {
@@ -16,7 +26,7 @@ export const login = async (req, res) => {
         res.json(result);
     }
     catch (err) {
-        res.status(401).json({ error: err.message });
+        handleError(res, err, "Login");
     }
 };
 export const googleLogin = async (req, res) => {
@@ -26,6 +36,6 @@ export const googleLogin = async (req, res) => {
         res.json(result);
     }
     catch (err) {
-        res.status(401).json({ error: err.message });
+        handleError(res, err, "Google login");
     }
 };

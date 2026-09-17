@@ -1,6 +1,7 @@
 import { useState } from "react";
 import googleIcon from "../assets/google-color-icon.svg";
 import { Loader2 } from "lucide-react";
+import { getErrorMessage } from "../utils/apiError";
 
 type GoogleTokenResponse = {
   access_token?: string;
@@ -91,8 +92,8 @@ const GoogleAuthButton = ({ onSuccess, onError }: GoogleAuthButtonProps) => {
 
           try {
             await onSuccess(response.access_token);
-          } catch (error: any) {
-            onError(error.response?.data?.error || error.message || "Google sign-in failed.");
+          } catch (error) {
+            onError(getErrorMessage(error, "Google sign-in failed."));
           } finally {
             setLoading(false);
           }
@@ -100,9 +101,9 @@ const GoogleAuthButton = ({ onSuccess, onError }: GoogleAuthButtonProps) => {
       });
 
       tokenClient?.requestAccessToken({ prompt: "select_account" });
-    } catch (error: any) {
+    } catch (error) {
       setLoading(false);
-      onError(error.message || "Google sign-in failed.");
+      onError(getErrorMessage(error, "Google sign-in failed."));
     }
   };
 
