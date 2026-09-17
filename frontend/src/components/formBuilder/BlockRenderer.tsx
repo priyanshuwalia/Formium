@@ -42,7 +42,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
   }, [block.label]);
 
   if (block.type === "DIVIDER") {
-    return <hr className="my-6 border-t border-gray-200 dark:border-gray-800" />;
+    return <hr className="my-6 border-t border-gray-200" />;
   }
   if (block.type === "H3") {
     return (
@@ -50,7 +50,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
         type="text"
         value={block.label}
         onChange={(e) => onChange(block.id, { label: e.target.value })}
-        className="text-2xl font-bold w-full bg-transparent border-none focus:ring-0 focus:outline-none placeholder-gray-300 dark:placeholder-gray-600 text-gray-900 dark:text-white mb-2"
+        className="text-2xl font-bold w-full bg-transparent border-none focus:ring-0 focus:outline-none placeholder-gray-300 text-gray-900 mb-2"
         placeholder="Heading 3"
       />
     );
@@ -136,7 +136,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
   };
 
   // Modern input styles: clean border, subtle shadow, ring on focus
-  const sharedInputClasses = "transition-all duration-200 rounded-2xl border border-gray-200 dark:border-gray-700 px-4 py-2.5 shadow-sm focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 focus:border-indigo-500 dark:focus:border-indigo-400 text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-800/70 placeholder:text-gray-400 dark:placeholder:text-gray-500 w-full";
+  const sharedInputClasses = "transition-all duration-200 rounded-2xl border border-gray-200 px-4 py-2.5 shadow-sm focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 text-gray-800 bg-white placeholder:text-gray-400 w-full";
 
   const rendererInput = () => {
     switch (block.type) {
@@ -185,10 +185,10 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
           <div className="space-y-3 pl-1">
             {options.map((opt, i) => (
               <div key={i} className="flex items-center gap-3 group">
-                <div className={`w-4 h-4 rounded border ${block.type === "CHECKBOXES" ? "rounded-md" : "rounded-full"} border-gray-300 dark:border-gray-600 flex-shrink-0`} />
+                <div className={`w-4 h-4 rounded border ${block.type === "CHECKBOXES" ? "rounded-md" : "rounded-full"} border-gray-300 flex-shrink-0`} />
                 <input
                   type="text"
-                  className="bg-transparent border-b border-transparent focus:border-indigo-500 focus:outline-none text-gray-700 dark:text-gray-300 w-full py-1 hover:border-gray-200 dark:hover:border-gray-700 transition-colors"
+                  className="bg-transparent border-b border-transparent focus:border-indigo-500 focus:outline-none text-gray-700 w-full py-1 hover:border-gray-200 transition-colors"
                   value={opt}
                   onChange={(e) => updateOption(i, e.target.value)}
                   placeholder={`Option ${i + 1}`}
@@ -201,7 +201,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
             <button
               type="button"
               onClick={addOption}
-              className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline mt-1"
+              className="text-sm font-medium text-indigo-600 hover:underline mt-1"
             >
               + Add Option
             </button>
@@ -224,7 +224,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
                   <span className="text-gray-400 text-xs">{i + 1}.</span>
                   <input
                     type="text"
-                    className="bg-transparent border-b border-transparent focus:border-indigo-500 focus:outline-none text-sm text-gray-700 dark:text-gray-300 flex-1 py-1"
+                    className="bg-transparent border-b border-transparent focus:border-indigo-500 focus:outline-none text-sm text-gray-700 flex-1 py-1"
                     value={opt}
                     onChange={(e) => updateOption(i, e.target.value)}
                   />
@@ -233,14 +233,14 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
                   </button>
                 </div>
               ))}
-              <button onClick={addOption} className="text-xs text-indigo-600 dark:text-indigo-400 font-medium hover:underline">+ Add Option</button>
+              <button onClick={addOption} className="text-xs text-indigo-600 font-medium hover:underline">+ Add Option</button>
             </div>
           </div>
         );
       case "FILE_UPLOAD":
         return (
-          <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl p-6 text-center bg-gray-50 dark:bg-gray-800/30">
-            <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/20 rounded-full flex items-center justify-center mx-auto mb-3 text-indigo-500">
+          <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center bg-gray-50">
+            <div className="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-3 text-indigo-500">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></svg>
             </div>
             <p className="text-sm text-gray-500">File upload enabled</p>
@@ -254,7 +254,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
 
 
   return (
-    <div className="group/block relative -mx-4 px-4 py-4 rounded-3xl hover:bg-gray-100/70 dark:hover:bg-gray-800/45 transition-colors duration-200">
+    <div className="group/block relative -mx-4 px-4 py-4 rounded-3xl hover:bg-gray-100/70 transition-colors duration-200">
 
       {/* Drag Handle */}
       <div
@@ -276,7 +276,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
               e.target.style.height = 'auto';
               e.target.style.height = e.target.scrollHeight + 'px';
             }}
-            className="text-lg font-medium bg-transparent border-none focus:ring-0 focus:outline-none p-0 text-gray-900 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-600 w-full leading-tight resize-none overflow-hidden"
+            className="text-lg font-medium bg-transparent border-none focus:ring-0 focus:outline-none p-0 text-gray-900 placeholder-gray-300 w-full leading-tight resize-none overflow-hidden"
             placeholder="Type a Question"
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
@@ -291,7 +291,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
         </div>
 
         <div className="flex items-center gap-2 opacity-0 group-hover/block:opacity-100 transition-opacity">
-          <label className="flex items-center gap-1.5 cursor-pointer text-xs font-medium text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 px-2 py-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+          <label className="flex items-center gap-1.5 cursor-pointer text-xs font-medium text-gray-400 hover:text-gray-600 px-2 py-1 rounded-full hover:bg-gray-200 transition">
             <input
               type="checkbox"
               checked={block.required}
@@ -303,7 +303,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
           {onDelete && (
             <button
               onClick={() => onDelete(block.id)}
-              className="text-gray-400 hover:text-red-500 p-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+              className="text-gray-400 hover:text-red-500 p-1.5 rounded-full hover:bg-red-50 transition-colors"
               title="Delete block"
             >
               <Trash size={16} />
@@ -320,7 +320,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
         <div className={`mt-2 flex items-center gap-2 flex-wrap transition-opacity ${showLogic ? "opacity-100" : "opacity-0 group-hover/block:opacity-100"}`}>
           <button
             onClick={() => setShowLogic(!showLogic)}
-            className="text-xs font-medium text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 px-3 py-1.5 rounded-full hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
+            className="text-xs font-medium text-gray-400 hover:text-indigo-600 px-3 py-1.5 rounded-full hover:bg-indigo-50 transition-colors"
           >
             <GitBranch size={14} className="inline mr-1" />
             Logic
@@ -329,17 +329,17 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
       )}
 
       {isLogicEnabled && showLogic && (
-        <div className="mt-3 pl-2 pt-3 border-t border-gray-100 dark:border-gray-800 space-y-3">
+        <div className="mt-3 pl-2 pt-3 border-t border-gray-100 space-y-3">
           {existingRules.length > 0 && (
             <div className="space-y-1.5">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Active rules</p>
               {existingRules.map((rule, i) => (
-                <div key={i} className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800/70 rounded-2xl px-3 py-2">
+                <div key={i} className="flex items-center gap-2 text-xs text-gray-600 bg-gray-100 rounded-2xl px-3 py-2">
                   <GitBranch size={12} className="text-indigo-500 flex-shrink-0" />
                   <span>
                     <span className="font-medium">{getTriggerLabel(rule.triggerBlockId)}</span>
                     <span className="text-gray-400 mx-1">equals</span>
-                    <span className="font-medium text-indigo-600 dark:text-indigo-400">&quot;{rule.triggerValue}&quot;</span>
+                    <span className="font-medium text-indigo-600">&quot;{rule.triggerValue}&quot;</span>
                     {rule.jumpToBlockId && (
                       <>
                         <span className="text-gray-400 mx-1">jump to</span>
@@ -359,7 +359,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
             </div>
           )}
 
-          <div className="rounded-3xl border border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-900/70 p-3">
+          <div className="rounded-3xl border border-gray-100 bg-gray-50/80 p-3">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Show this question when</p>
             <div className="flex items-end gap-2 flex-wrap">
             <div className="flex flex-col gap-1">
@@ -367,7 +367,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
               <select
                 value={triggerBlockId}
                 onChange={handleTriggerBlockChange}
-                className="text-xs rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30"
+                className="text-xs rounded-2xl border border-gray-200 bg-white text-gray-700 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100"
               >
                 <option value="">Select a block...</option>
                 {triggerOptions.map((b) => (
@@ -387,7 +387,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
                   <select
                     value={triggerValue}
                     onChange={(e) => setTriggerValue(e.target.value)}
-                    className="text-xs rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30"
+                    className="text-xs rounded-2xl border border-gray-200 bg-white text-gray-700 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100"
                   >
                     {selectedTriggerBlock.options?.map((opt) => (
                       <option key={opt} value={opt}>{opt}</option>
@@ -399,7 +399,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
                     value={triggerValue}
                     onChange={(e) => setTriggerValue(e.target.value)}
                     placeholder="e.g. Yes"
-                    className="text-xs rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30"
+                    className="text-xs rounded-2xl border border-gray-200 bg-white text-gray-700 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100"
                   />
                 )}
               </div>
@@ -416,7 +416,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
           </div>
 
           {isJumpEnabled && jumpTargetOptions.length > 0 && (
-            <div className="rounded-3xl border border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-900/70 p-3">
+            <div className="rounded-3xl border border-gray-100 bg-gray-50/80 p-3">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Logic jump from this question</p>
               <div className="flex items-end gap-2 flex-wrap">
                 <div className="flex flex-col gap-1">
@@ -424,7 +424,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
                   <select
                     value={jumpValue}
                     onChange={(e) => setJumpValue(e.target.value)}
-                    className="text-xs rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30"
+                    className="text-xs rounded-2xl border border-gray-200 bg-white text-gray-700 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100"
                   >
                     <option value="">Choose answer...</option>
                     {block.options?.map((opt) => (
@@ -437,7 +437,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
                   <select
                     value={jumpToBlockId}
                     onChange={(e) => setJumpToBlockId(e.target.value)}
-                    className="text-xs rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30"
+                    className="text-xs rounded-2xl border border-gray-200 bg-white text-gray-700 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100"
                   >
                     <option value="">Select destination...</option>
                     {jumpTargetOptions.map((b) => (

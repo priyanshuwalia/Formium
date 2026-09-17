@@ -58,8 +58,8 @@ const Analytics: React.FC = () => {
         <div className="flex-1 p-4 lg:p-8 overflow-y-auto w-full">
             { }
             <header className="mb-8 mt-12 lg:mt-0"> { }
-                <h1 className="text-2xl lg:text-3xl font-extrabold text-gray-900 dark:text-white">Analytics</h1>
-                <p className="text-sm lg:text-base text-gray-500 dark:text-gray-400 mt-2">Overview of your form performance and insights.</p>
+                <h1 className="text-2xl lg:text-3xl font-extrabold text-gray-900">Analytics</h1>
+                <p className="text-sm lg:text-base text-gray-500 mt-2">Overview of your form performance and insights.</p>
             </header>
 
             { }
@@ -67,18 +67,18 @@ const Analytics: React.FC = () => {
                 {data.stats.map((stat, idx) => {
                     const Icon = iconMap[stat.icon] || Users;
                     return (
-                        <div key={idx} className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition">
+                        <div key={idx} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
                             <div className="flex items-center justify-between mb-4">
-                                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg text-indigo-600 dark:text-indigo-400">
+                                <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
                                     <Icon size={24} />
                                 </div>
-                                <div className={`flex items-center gap-1 text-sm font-medium ${stat.trend === 'up' ? 'text-green-600 dark:text-green-400' : 'text-indigo-600 dark:text-indigo-400'}`}>
+                                <div className={`flex items-center gap-1 text-sm font-medium ${stat.trend === 'up' ? 'text-green-600' : 'text-indigo-600'}`}>
                                     {stat.trend === 'up' ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
                                     {stat.change}
                                 </div>
                             </div>
-                            <div className="text-3xl font-bold text-gray-900 dark:text-white">{stat.value}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">{stat.label}</div>
+                            <div className="text-3xl font-bold text-gray-900">{stat.value}</div>
+                            <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
                         </div>
                     );
                 })}
@@ -88,10 +88,10 @@ const Analytics: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                 { }
-                <div className="lg:col-span-2 bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+                <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Response Trends</h3>
-                        <select className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-lg p-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+                        <h3 className="text-lg font-bold text-gray-900">Response Trends</h3>
+                        <select className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg p-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
                             <option>Last 7 days</option>
                         </select>
                     </div>
@@ -131,24 +131,24 @@ const Analytics: React.FC = () => {
                 </div>
 
                 { }
-                <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Top Performing Forms</h3>
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 className="text-lg font-bold text-gray-900 mb-6">Top Performing Forms</h3>
                     <div className="space-y-6">
                         {data.topForms.length > 0 ? (
                             data.topForms.map((form, idx) => (
-                                <div key={idx} className="flex items-center justify-between pb-4 border-b border-gray-50 dark:border-gray-800 last:border-0 last:pb-0">
+                                <div key={idx} className="flex items-center justify-between pb-4 border-b border-gray-50 last:border-0 last:pb-0">
                                     <div className="flex-1 min-w-0 mr-4"> { }
-                                        <div className="font-semibold text-gray-800 dark:text-gray-200 mb-1 truncate">{form.name}</div>
-                                        <div className="text-xs text-gray-500 dark:text-gray-400">{form.responses.toLocaleString()} responses</div>
+                                        <div className="font-semibold text-gray-800 mb-1 truncate">{form.name}</div>
+                                        <div className="text-xs text-gray-500">{form.responses.toLocaleString()} responses</div>
                                     </div>
                                     {/* Removed Views/Conversion layout */}
                                 </div>
                             ))
                         ) : (
-                            <div className="text-center text-gray-500 dark:text-gray-400 py-4">No forms yet</div>
+                            <div className="text-center text-gray-500 py-4">No forms yet</div>
                         )}
                     </div>
-                    <button className="w-full mt-6 py-2 text-sm text-indigo-600 dark:text-indigo-400 font-medium hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition">
+                    <button className="w-full mt-6 py-2 text-sm text-indigo-600 font-medium hover:bg-indigo-50 rounded-lg transition">
                         View All Details
                     </button>
                 </div>

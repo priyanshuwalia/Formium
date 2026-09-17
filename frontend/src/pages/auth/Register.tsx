@@ -49,12 +49,12 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="flex max-h-screen max-w-screen items-center justify-center bg-gray-100 dark:bg-gray-900 p-4 font-inter ">
+    <div className="flex max-h-screen max-w-screen items-center justify-center bg-gray-100 p-4 font-inter ">
       {}
-      <div className="flex w-full max-w-4xl flex-col rounded-2xl bg-white dark:bg-gray-800 shadow-2xl md:flex-row ">
+      <div className="flex w-full max-w-4xl flex-col rounded-2xl bg-white shadow-2xl md:flex-row ">
         {}
-        <div className="hidden md:flex w-1/2 flex-col items-center justify-center bg-white dark:bg-gray-800 p-12  text-center">
-          <div className="font-medium text-4xl lg:text-5xl text-zinc-800 dark:text-white">
+        <div className="hidden md:flex w-1/2 flex-col items-center justify-center bg-white p-12  text-center">
+          <div className="font-medium text-4xl lg:text-5xl text-zinc-800">
             The one{" "}
             <span className="bg-gradient-to-r from-[#F5CE9B] to-[#E84C4A] bg-clip-text text-transparent">
               Stylish
@@ -68,16 +68,16 @@ const Register: React.FC = () => {
           <img
             src={thoughtfulGirl}
             alt="Registration Illustration"
-            className="mt-8 max-w-xs object-contain dark:invert"
+            className="mt-8 max-w-xs object-contain"
           />
         </div>
 
         {}
-        <div className="w-full bg-white dark:bg-gray-800 p-8 md:w-1/2 lg:p-10 ">
-          <h1 className="text-4xl font-extrabold text-zinc-800 dark:text-white wrap-normal">
+        <div className="w-full bg-white p-8 md:w-1/2 lg:p-10 ">
+          <h1 className="text-4xl font-extrabold text-zinc-800 wrap-normal">
             Craft intelligent forms
           </h1>
-          <h3 className="mt-2 text-base text-zinc-500 dark:text-gray-400">
+          <h3 className="mt-2 text-base text-zinc-500">
             Meet Formium, your intuitive form-building partner.
           </h3>
 
@@ -147,11 +147,11 @@ const Register: React.FC = () => {
 
             {}
             <div className="flex items-center">
-              <hr className="flex-grow border-t border-gray-300 dark:border-gray-600" />
-              <span className="mx-4 flex-shrink text-sm text-gray-500 dark:text-gray-400">
+              <hr className="flex-grow border-t border-gray-300" />
+              <span className="mx-4 flex-shrink text-sm text-gray-500">
                 or
               </span>
-              <hr className="flex-grow border-t border-gray-300 dark:border-gray-600" />
+              <hr className="flex-grow border-t border-gray-300" />
             </div>
 
             {}
@@ -165,7 +165,7 @@ const Register: React.FC = () => {
               Already have an account?
               <Link
                 to="/login"
-                className="ml-1 font-semibold text-gray-700 dark:text-white underline hover:text-blue-800 dark:hover:text-blue-400"
+                className="ml-1 font-semibold text-gray-700 underline hover:text-blue-800"
               >
                 Log in
               </Link>

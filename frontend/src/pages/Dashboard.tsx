@@ -91,19 +91,19 @@ const Dashboard = () => {
       <div className="max-w-6xl mx-auto mt-12 lg:mt-0">
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4 md:gap-0">
           <div>
-            <h1 className="text-2xl lg:text-3xl font-extrabold text-indigo-900 dark:text-white-400 tracking-tight">
+            <h1 className="text-2xl lg:text-3xl font-extrabold text-indigo-900 tracking-tight">
               Dashboard
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm lg:text-lg">
+            <p className="text-gray-500 mt-2 text-sm lg:text-lg">
               Welcome back,{" "}
-              <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+              <span className="font-semibold text-indigo-600">
                 {user?.email}
               </span>
             </p>
           </div>
           <Link
             to="/create-form"
-            className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 flex items-center gap-2 w-full md:w-auto justify-center"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 flex items-center gap-2 w-full md:w-auto justify-center"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -122,17 +122,17 @@ const Dashboard = () => {
         </header>
 
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 mb-8 rounded-md">
-            <p className="text-red-700 dark:text-red-400">{error}</p>
+          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-8 rounded-md">
+            <p className="text-red-700">{error}</p>
           </div>
         )}
 
         {forms.length === 0 && !error ? (
-          <div className="text-center py-20 bg-white dark:bg-gray-900 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 p-4">
-            <div className="bg-indigo-50 dark:bg-indigo-900/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="text-center py-20 bg-white rounded-3xl shadow-sm border border-gray-100 p-4">
+            <div className="bg-indigo-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-10 w-10 text-indigo-500 dark:text-indigo-400"
+                className="h-10 w-10 text-indigo-500"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -145,16 +145,16 @@ const Dashboard = () => {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
               No forms yet
             </h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-8 max-w-sm mx-auto">
+            <p className="text-gray-500 mb-8 max-w-sm mx-auto">
               Create your first form to start collecting responses from your
               users.
             </p>
             <Link
               to="/create-form"
-              className="text-indigo-600 dark:text-indigo-400 font-semibold hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
+              className="text-indigo-600 font-semibold hover:text-indigo-800 transition-colors"
             >
               Start creating →
             </Link>
@@ -164,7 +164,7 @@ const Dashboard = () => {
             {forms.map((form) => (
               <div
                 key={form.id}
-                className="group bg-white dark:bg-gray-900 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col h-full hover:border-indigo-100 dark:hover:border-indigo-900/50 transform hover:-translate-y-1"
+                className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col h-full hover:border-indigo-100 transform hover:-translate-y-1"
               >
                 <div
                   className={`h-3 w-full ${form.theme || getColorForString(form.id)}`}
@@ -173,23 +173,23 @@ const Dashboard = () => {
                   <div className="flex justify-between items-start mb-4">
                     <Link
                       to={`/forms/${form.slug}`}
-                      className="text-xl font-bold text-gray-800 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors line-clamp-1"
+                      className="text-xl font-bold text-gray-800 hover:text-indigo-600 transition-colors line-clamp-1"
                       title={form.title}
                     >
                       {form.title}
                     </Link>
                     {form.isPublished && (
-                      <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs px-2 py-1 rounded-full font-medium">
+                      <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-medium">
                         Active
                       </span>
                     )}
                   </div>
 
-                  <p className="text-gray-500 dark:text-gray-400 text-sm mb-6 line-clamp-2 flex-1">
+                  <p className="text-gray-500 text-sm mb-6 line-clamp-2 flex-1">
                     {form.description || "No description provided."}
                   </p>
 
-                  <div className="flex items-center justify-between text-sm text-gray-400 dark:text-gray-500 mt-auto pt-4 border-t border-gray-50 dark:border-gray-800">
+                  <div className="flex items-center justify-between text-sm text-gray-400 mt-auto pt-4 border-t border-gray-50">
                     <div className="flex items-center gap-1">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -211,14 +211,14 @@ const Dashboard = () => {
                     <div className="flex gap-2 items-center">
                       <button
                         onClick={() => handleDelete(form.id)}
-                        className="text-gray-400 hover:text-red-600 dark:hover:text-red-400 p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                        className="text-gray-400 hover:text-red-600 p-1.5 rounded-md hover:bg-red-50 transition-colors"
                         title="Delete Form"
                       >
                         <Trash2 size={16} />
                       </button>
                       <Link
                         to={`/forms/${form.slug}/responses`}
-                        className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium text-xs border border-indigo-200 dark:border-indigo-900 px-2 py-1 rounded hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition"
+                        className="text-indigo-600 hover:text-indigo-800 font-medium text-xs border border-indigo-200 px-2 py-1 rounded hover:bg-indigo-50 transition"
                       >
                         View Results
                       </Link>

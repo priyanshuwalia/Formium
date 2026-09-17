@@ -112,7 +112,7 @@ const GoogleAuthButton = ({ onSuccess, onError }: GoogleAuthButtonProps) => {
       type="button"
       disabled={loading}
       onClick={handleGoogleAuth}
-      className="flex w-full items-center justify-center rounded-md border border-gray-300 dark:border-gray-600 py-2.5 font-semibold text-gray-700 dark:text-gray-300 transition hover:bg-gray-100 dark:hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-70"
+      className="flex w-full items-center justify-center rounded-md border border-gray-300 py-2.5 font-semibold text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-70"
     >
       <img src={googleIcon} alt="Google" className="mr-2 h-5 w-5" />
       {loading ? <Loader2 className="animate-spin h-5 w-5" /> : "Continue with Google"}

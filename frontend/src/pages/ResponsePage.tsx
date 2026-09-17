@@ -182,7 +182,7 @@ const ResponsePage: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400 mx-auto mb-6">
+          <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center text-green-600 mx-auto mb-6">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="w-8 h-8"
@@ -198,10 +198,10 @@ const ResponsePage: React.FC = () => {
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
             {form?.successText || "Response submitted!"}
           </h1>
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-gray-500">
             Thank you for your response.
           </p>
         </div>
@@ -230,17 +230,17 @@ const ResponsePage: React.FC = () => {
   }
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-950 min-h-screen font-inter flex flex-col items-center py-12 px-4 sm:px-6 transition-colors duration-300">
+    <div className="bg-gray-50 min-h-screen font-inter flex flex-col items-center py-12 px-4 sm:px-6 transition-colors duration-300">
       <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
         {/* Form Card */}
-        <div className="bg-white dark:bg-gray-900 rounded-[2.25rem] shadow-xl shadow-gray-200/60 dark:shadow-black/20 border border-gray-100 dark:border-gray-800 overflow-hidden">
+        <div className="bg-white rounded-[2.25rem] shadow-xl shadow-gray-200/60 border border-gray-100 overflow-hidden">
           {/* Header */}
-          <div className="bg-gray-50/80 dark:bg-gray-800/60 p-8 sm:p-12 border-b border-gray-100 dark:border-gray-800">
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">
+          <div className="bg-gray-50/80 p-8 sm:p-12 border-b border-gray-100">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3 tracking-tight">
               {form.title}
             </h1>
             {form.description && (
-              <p className="text-lg text-gray-500 dark:text-gray-400 leading-relaxed">
+              <p className="text-lg text-gray-500 leading-relaxed">
                 {form.description}
               </p>
             )}
@@ -256,7 +256,7 @@ const ResponsePage: React.FC = () => {
                 <div key={id} className="group">
                   <label
                     htmlFor={inputId}
-                    className="block text-lg font-medium text-gray-900 dark:text-gray-100 mb-2.5 transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
+                    className="block text-lg font-medium text-gray-900 mb-2.5 transition-colors group-hover:text-indigo-600"
                   >
                     {label}
                     {required && (
@@ -270,7 +270,7 @@ const ResponsePage: React.FC = () => {
               );
 
               const inputClasses =
-                "w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-400 transition-all duration-200 shadow-sm";
+                "w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 shadow-sm";
 
               switch (type) {
                 case "SHORT_ANS":
@@ -319,7 +319,7 @@ const ResponsePage: React.FC = () => {
                       {options?.map((opt) => (
                         <label
                           key={opt}
-                          className="flex items-center gap-3 p-3 rounded-2xl border border-transparent hover:bg-gray-50 dark:hover:bg-gray-800/60 hover:border-indigo-100 dark:hover:border-gray-700 cursor-pointer transition-all"
+                          className="flex items-center gap-3 p-3 rounded-2xl border border-transparent hover:bg-gray-50 hover:border-indigo-100 cursor-pointer transition-all"
                         >
                           <input
                             type="radio"
@@ -331,9 +331,9 @@ const ResponsePage: React.FC = () => {
                               handleInputChange(id, e.target.value)
                             }
                             required={required}
-                            className="w-5 h-5 accent-indigo-600 border-gray-300 dark:border-gray-600 focus:ring-indigo-500"
+                            className="w-5 h-5 accent-indigo-600 border-gray-300 focus:ring-indigo-500"
                           />
-                          <span className="text-gray-700 dark:text-gray-300">
+                          <span className="text-gray-700">
                             {opt}
                           </span>
                         </label>
@@ -347,7 +347,7 @@ const ResponsePage: React.FC = () => {
                       {options?.map((opt) => (
                         <label
                           key={opt}
-                          className="flex items-center gap-3 p-3 rounded-2xl border border-transparent hover:bg-gray-50 dark:hover:bg-gray-800/60 hover:border-indigo-100 dark:hover:border-gray-700 cursor-pointer transition-all"
+                          className="flex items-center gap-3 p-3 rounded-2xl border border-transparent hover:bg-gray-50 hover:border-indigo-100 cursor-pointer transition-all"
                         >
                           <input
                             type="checkbox"
@@ -357,9 +357,9 @@ const ResponsePage: React.FC = () => {
                             onChange={(e) =>
                               handleCheckboxChange(id, opt, e.target.checked)
                             }
-                            className="w-5 h-5 accent-indigo-600 rounded border-gray-300 dark:border-gray-600 focus:ring-indigo-500"
+                            className="w-5 h-5 accent-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
                           />
-                          <span className="text-gray-700 dark:text-gray-300">
+                          <span className="text-gray-700">
                             {opt}
                           </span>
                         </label>
@@ -425,7 +425,7 @@ const ResponsePage: React.FC = () => {
                             strokeWidth="2"
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            className={`transition-colors ${(responses[id] as number) >= star ? "" : "text-gray-300 dark:text-gray-600 hover:text-gray-400"}`}
+                            className={`transition-colors ${(responses[id] as number) >= star ? "" : "text-gray-300 hover:text-gray-400"}`}
                           >
                             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                           </svg>
@@ -438,7 +438,7 @@ const ResponsePage: React.FC = () => {
                   return (
                     <h3
                       key={id}
-                      className="text-2xl font-bold text-gray-900 dark:text-white pt-6 pb-2 border-b-2 border-gray-100 dark:border-gray-800"
+                      className="text-2xl font-bold text-gray-900 pt-6 pb-2 border-b-2 border-gray-100"
                     >
                       {label}
                     </h3>
@@ -448,13 +448,13 @@ const ResponsePage: React.FC = () => {
                   return (
                     <hr
                       key={id}
-                      className="my-8 border-t border-gray-100 dark:border-gray-800"
+                      className="my-8 border-t border-gray-100"
                     />
                   );
 
                 case "FILE_UPLOAD":
                   return fieldWrapper(
-                    <div className="relative border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-3xl p-8 text-center hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors">
+                    <div className="relative border-2 border-dashed border-gray-300 rounded-3xl p-8 text-center hover:bg-gray-50 transition-colors">
                       <input
                         id={inputId}
                         type="file"
@@ -480,7 +480,7 @@ const ResponsePage: React.FC = () => {
                             d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                           />
                         </svg>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-sm text-gray-500">
                           {uploadingBlockId === id ? (
                             <span className="text-indigo-600 font-medium">
                               Uploading...
@@ -506,7 +506,7 @@ const ResponsePage: React.FC = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 dark:bg-white dark:hover:bg-gray-200 text-white dark:text-black py-4 px-8 rounded-2xl font-bold text-lg shadow-xl shadow-indigo-500/20 dark:shadow-none transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 px-8 rounded-2xl font-bold text-lg shadow-xl shadow-indigo-500/20 transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {submitting ? (
                   <span className="flex items-center justify-center gap-2">

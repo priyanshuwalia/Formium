@@ -24,11 +24,11 @@ const AIInsights = ({ formId }: { formId: string }) => {
   };
 
   return (
-    <div className="mb-8 rounded-2xl border border-indigo-100 dark:border-indigo-900/40 bg-indigo-50/50 dark:bg-indigo-900/10 p-6">
+    <div className="mb-8 rounded-2xl border border-indigo-100 bg-indigo-50/50 p-6">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <Sparkles size={18} className="text-indigo-600 dark:text-indigo-400" />
-          <h3 className="font-bold text-gray-900 dark:text-white">AI Insights</h3>
+          <Sparkles size={18} className="text-indigo-600" />
+          <h3 className="font-bold text-gray-900">AI Insights</h3>
         </div>
         <button
           onClick={handleAnalyze}
@@ -44,20 +44,20 @@ const AIInsights = ({ formId }: { formId: string }) => {
 
       {insights && (
         <div className="mt-4 space-y-6">
-          <p className="text-sm text-gray-700 dark:text-gray-300">
+          <p className="text-sm text-gray-700">
             {insights.summary}
           </p>
 
           {insights.themes?.length > 0 && (
             <div>
-              <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
                 Themes
               </h4>
               <div className="flex flex-wrap gap-2">
                 {insights.themes.map((t, i) => (
                   <span
                     key={i}
-                    className="rounded-full bg-white dark:bg-gray-900 border border-indigo-100 dark:border-indigo-900/40 px-3 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-300"
+                    className="rounded-full bg-white border border-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700"
                   >
                     {t.theme} · {t.mentions}
                   </span>
@@ -68,22 +68,22 @@ const AIInsights = ({ formId }: { formId: string }) => {
 
           {insights.notableResponses?.length > 0 && (
             <div>
-              <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
                 Notable responses
               </h4>
               <div className="space-y-3">
                 {insights.notableResponses.map((n, i) => (
                   <div
                     key={i}
-                    className="rounded-lg bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-4"
+                    className="rounded-lg bg-white border border-gray-100 p-4"
                   >
-                    <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                    <div className="text-xs font-semibold text-gray-500">
                       {n.label}
                     </div>
-                    <div className="mt-1 text-sm text-gray-800 dark:text-gray-200">
+                    <div className="mt-1 text-sm text-gray-800">
                       {n.answer}
                     </div>
-                    <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    <div className="mt-1 text-xs text-gray-500">
                       {n.why}
                     </div>
                   </div>

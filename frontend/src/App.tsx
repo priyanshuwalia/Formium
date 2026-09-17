@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import { AuthProvider } from './context/AuthContext';
-import { ThemeProvider } from './context/ThemeContext';
 import Home from './pages/Home';
 import CreateForm from './pages/CreateForm';
 import Dashboard from './pages/Dashboard';
@@ -32,7 +31,6 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <ThemeProvider>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path='/login' element={<Login />} />
@@ -63,7 +61,6 @@ function App() {
             <Route path='/forms/:slug/published' element={<PublishSuccessPage />} />
 
           </Routes>
-        </ThemeProvider>
       </AuthProvider>
     </Router>
   )
