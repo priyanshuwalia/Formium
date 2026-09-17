@@ -5,7 +5,7 @@ import { useContext } from "react"
 import { ThemeContext } from "@/context/ThemeProvider"
 
 export default function ModeToggle() {
-  const { theme, toggleTheme } = useContext(ThemeContext)
+  const { toggleTheme } = useContext(ThemeContext)
 
   return (
     <Button variant="outline" size="icon" onClick={toggleTheme}>

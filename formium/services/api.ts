@@ -1,6 +1,6 @@
 const BASE = "/api";
 
-export async function apiFetch<T = any>(
+export async function apiFetch<T = unknown>(
   path: string,
   options?: RequestInit,
 ): Promise<T> {

@@ -13,9 +13,26 @@ interface FormResponsesPageProps {
     params: Promise<{ slug: string }>;
 }
 
+interface FormMeta {
+    id: string;
+    title: string;
+}
+
+interface ResponseItem {
+    id: string;
+    blockId: string;
+    value: string;
+}
+
+interface FormResponse {
+    id: string;
+    createdAt: string;
+    items: ResponseItem[];
+}
+
 const FormResponses: React.FC<FormResponsesPageProps> = ({ params }) => {
     const { slug } = React.use(params);
-    const [responses, setResponses] = useState<any[]>([]);
+    const [responses, setResponses] = useState<FormResponse[]>([]);
     const [formTitle, setFormTitle] = useState("");
     const [formId, setFormId] = useState("");
     const [loading, setLoading] = useState(true);
@@ -24,11 +41,11 @@ const FormResponses: React.FC<FormResponsesPageProps> = ({ params }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const form: any = await apiFetch(`/forms/${slug}`);
+                const form = await apiFetch<FormMeta>(`/forms/${slug}`);
                 setFormTitle(form.title);
                 setFormId(form.id);
 
-                const res = await apiFetch<any[]>(`/response/${form.id}`);
+                const res = await apiFetch<FormResponse[]>(`/response/${form.id}`);
                 setResponses(res);
             } catch (err) {
                 console.error(err);
@@ -88,7 +105,7 @@ const FormResponses: React.FC<FormResponsesPageProps> = ({ params }) => {
                                         </td>
                                         <td className="p-4">
                                             <div className="flex flex-wrap gap-2">
-                                                {r.items.slice(0, 3).map((item: any) => (
+                                                {r.items.slice(0, 3).map((item) => (
                                                     <span key={item.id} className="bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 px-2 py-1 rounded text-xs border border-indigo-100 dark:border-indigo-900/30">
                                                         {truncate(item.value, 30)}
                                                     </span>
@@ -110,6 +127,8 @@ const FormResponses: React.FC<FormResponsesPageProps> = ({ params }) => {
                         </table>
                     </div>
                 </div>
+            )}
+                </>
             )}
         </div>
     );

@@ -58,8 +58,8 @@ export async function GET(req: NextRequest) {
         "Content-Disposition": `attachment; filename="${filename}"`,
       },
     });
-  } catch (err: any) {
+  } catch (err) {
     console.error("CSV export failed:", err);
-    return NextResponse.json({ error: err.message || "Failed to export responses" }, { status: 500 });
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Failed to export responses" }, { status: 500 });
   }
 }

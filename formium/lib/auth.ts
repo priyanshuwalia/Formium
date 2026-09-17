@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { createHash } from "crypto";
 
 export type AuthUser = {
   id: string;
@@ -37,6 +38,38 @@ export async function signRefreshToken(userId: string) {
     .setIssuedAt()
     .setExpirationTime(REFRESH_TOKEN_TTL)
     .sign(getSecret());
+}
+
+// Fingerprint of the current password hash — invalidates reset tokens after a
+// password change without needing a DB table.
+export const passwordFingerprint = (passwordHash: string) =>
+  createHash("sha256").update(passwordHash).digest("hex");
+
+export async function signPasswordResetToken(
+  userId: string,
+  passwordHash: string,
+) {
+  return new SignJWT({
+    id: userId,
+    type: "password-reset",
+    fp: passwordFingerprint(passwordHash),
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("15m")
+    .sign(getSecret());
+}
+
+export async function verifyPasswordResetToken(
+  token: string,
+): Promise<{ id: string; fp: string } | null> {
+  try {
+    const { payload } = await jwtVerify(token, getSecret());
+    if (payload.type !== "password-reset") return null;
+    return { id: payload.id as string, fp: payload.fp as string };
+  } catch {
+    return null;
+  }
 }
 
 export async function verifyAccessToken(

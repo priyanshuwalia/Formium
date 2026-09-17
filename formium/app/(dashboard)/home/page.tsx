@@ -5,21 +5,21 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth/authContext";
 import { ThemeContext } from "@/context/ThemeProvider";
-import { type FormBlock } from "@/lib/types";
+import { type Form, type FormBlock } from "@/lib/types";
 import { apiFetch } from "@/services/api";
 import { v4 as uuid } from "uuid";
 
 const UserHome: React.FC = () => {
     const { user } = useAuth();
     const themeCtx = useContext(ThemeContext);
-    const [recentForms, setRecentForms] = useState<any[]>([]);
+    const [recentForms, setRecentForms] = useState<Form[]>([]);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
     useEffect(() => {
         const fetchForms = async () => {
             try {
-                const forms = await apiFetch<any[]>("/forms/dashboard");
+                const forms = await apiFetch<Form[]>("/forms/dashboard");
                 if (Array.isArray(forms)) {
                     setRecentForms(forms.slice(0, 3));
                 }

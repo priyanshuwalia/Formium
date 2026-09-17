@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(response, { status: 201 });
-  } catch (err: any) {
-    return apiError(err.message || "Couldn't submit response", 500);
+  } catch (err) {
+    return apiError(err instanceof Error ? err.message : "Couldn't submit response", 500);
   }
 }

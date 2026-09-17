@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { CheckCircle, Copy, ArrowRight, Home, Code2 } from 'lucide-react';
@@ -12,11 +12,9 @@ const PublishSuccessPage: React.FC<PublishSuccessPageProps> = ({ params }) => {
   const { slug } = React.use(params);
   const router = useRouter();
   const [copied, setCopied] = useState(false);
-  const [origin, setOrigin] = useState('');
-
-  useEffect(() => {
-    setOrigin(window.location.origin);
-  }, []);
+  const [origin] = useState(() =>
+    typeof window !== "undefined" ? window.location.origin : "",
+  );
 
   const formUrl = `${origin}/forms/${slug}`;
 

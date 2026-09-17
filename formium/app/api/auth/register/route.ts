@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { registerUser } from "@/lib/services/auth";
+import { registerUser, AuthError } from "@/lib/services/auth";
 import { registerSchema, apiError } from "@/lib/validations";
 import { setAuthCookies } from "@/lib/auth";
 
@@ -26,7 +26,9 @@ export async function POST(req: NextRequest) {
     );
     await setAuthCookies(user.id);
     return res;
-  } catch (err: any) {
-    return apiError(err.message || "Registration failed", 400);
+  } catch (err) {
+    if (err instanceof AuthError) return apiError(err.message, 400);
+    console.error("Registration error:", err);
+    return apiError("Registration failed", 500);
   }
 }

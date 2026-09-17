@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { loginUser } from "@/lib/services/auth";
+import { loginUser, AuthError } from "@/lib/services/auth";
 import { loginSchema, apiError } from "@/lib/validations";
 import { setAuthCookies } from "@/lib/auth";
 
@@ -23,7 +23,9 @@ export async function POST(req: NextRequest) {
     });
     await setAuthCookies(user.id);
     return res;
-  } catch (err: any) {
-    return apiError(err.message || "Login failed", 401);
+  } catch (err) {
+    if (err instanceof AuthError) return apiError(err.message, 401);
+    console.error("Login error:", err);
+    return apiError("Login failed", 500);
   }
 }

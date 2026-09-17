@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getCurrentUserId } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createBillingPortalSession, isBillingConfigured } from "@/lib/stripe";
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   if (!isBillingConfigured()) {
     return NextResponse.json(
       { error: "Billing is not configured" },
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       `${base}/settings`,
     );
     return NextResponse.json({ url });
-  } catch (err: any) {
+  } catch (err) {
     console.error("Stripe portal failed:", err);
     return NextResponse.json({ error: "Failed to open billing portal" }, { status: 500 });
   }

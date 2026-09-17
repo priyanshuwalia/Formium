@@ -26,8 +26,8 @@ const AIInsights: React.FC<AIInsightsProps> = ({ formId }) => {
         `/ai/analyze?formId=${formId}`,
       );
       setResult(res.result);
-    } catch (err: any) {
-      setError(err.message || "Analysis failed");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Analysis failed");
       setResult(null);
     } finally {
       setLoading(false);

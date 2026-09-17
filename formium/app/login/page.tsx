@@ -104,7 +104,7 @@ export default function LoginPage() {
             <GoogleAuthButton onSuccess={handleGoogle} />
             <div className="border-b w-full py-1"></div>
             <div>
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Button variant="link" className="m-0 p-0 gap-0">
                 <Link href="/signup">Sign up</Link>
               </Button>

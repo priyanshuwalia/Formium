@@ -1,4 +1,5 @@
 import { prisma } from "../prisma";
+import { Prisma } from "@prisma/client";
 import type { BlockType } from "@prisma/client";
 
 export const createFormBlock = async (data: {
@@ -7,11 +8,17 @@ export const createFormBlock = async (data: {
   label: string;
   required: boolean;
   placeholder?: string;
-  options?: any;
-  logic?: any;
+  options?: (string | number)[];
+  logic?: { triggerBlockId: string; triggerValue: string }[] | null;
   order: number;
 }) => {
-  return prisma.formBlock.create({ data });
+  const { logic, ...rest } = data;
+  return prisma.formBlock.create({
+    data: {
+      ...rest,
+      logic: logic === null ? Prisma.JsonNull : logic,
+    },
+  });
 };
 
 export const getBlocksByFormId = async (formId: string) => {
@@ -29,14 +36,18 @@ export const updateBlockById = async (
     label?: string;
     required?: boolean;
     placeholder?: string;
-    options?: any;
-    logic?: any;
+    options?: (string | number)[];
+    logic?: { triggerBlockId: string; triggerValue: string }[] | null;
     order?: number;
   },
 ) => {
+  const { logic, ...rest } = data;
   return prisma.formBlock.updateMany({
     where: { id: blockId, form: { userId } },
-    data,
+    data: {
+      ...rest,
+      logic: logic === null ? Prisma.JsonNull : logic,
+    },
   });
 };
 

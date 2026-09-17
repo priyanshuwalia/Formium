@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
 
 type GoogleTokenResponse = {
   access_token?: string;
@@ -97,8 +98,8 @@ const GoogleAuthButton = ({ onSuccess, onError }: GoogleAuthButtonProps) => {
 
           try {
             await onSuccess(response.access_token);
-          } catch (error: any) {
-            fail(error.message || "Google sign-in failed.");
+          } catch (error) {
+            fail(error instanceof Error ? error.message : "Google sign-in failed.");
           } finally {
             setLoading(false);
           }
@@ -106,8 +107,8 @@ const GoogleAuthButton = ({ onSuccess, onError }: GoogleAuthButtonProps) => {
       });
 
       tokenClient?.requestAccessToken({ prompt: "select_account" });
-    } catch (error: any) {
-      fail(error.message || "Google sign-in failed.");
+    } catch (error) {
+      fail(error instanceof Error ? error.message : "Google sign-in failed.");
     }
   };
 
@@ -123,7 +124,7 @@ const GoogleAuthButton = ({ onSuccess, onError }: GoogleAuthButtonProps) => {
         <Loader2 className="animate-spin h-5 w-5" />
       ) : (
         <>
-          <img src="/google.svg" alt="Google" className="mr-2 h-5 w-5" />
+          <Image src="/google.svg" alt="Google" width={20} height={20} className="mr-2 h-5 w-5" />
           Continue with Google
         </>
       )}

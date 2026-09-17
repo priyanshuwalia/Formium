@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 
     const form = await createForm({ ...parsed.data, userId });
     return NextResponse.json(form, { status: 201 });
-  } catch (err: any) {
-    return apiError(err.message || "Failed to create form", 500);
+  } catch (err) {
+    return apiError(err instanceof Error ? err.message : "Failed to create form", 500);
   }
 }

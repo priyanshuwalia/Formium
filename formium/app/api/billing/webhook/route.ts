@@ -14,16 +14,13 @@ export async function POST(req: NextRequest) {
   let event;
   try {
     event = await verifyWebhookEvent(payload, signature);
-  } catch (err: any) {
-    return NextResponse.json({ error: `Webhook error: ${err.message}` }, { status: 400 });
+  } catch (err) {
+    return NextResponse.json(
+      { error: `Webhook error: ${err instanceof Error ? err.message : "Unknown error"}` },
+      { status: 400 },
+    );
   }
 
-  const customerId =
-    typeof event.data.object === "object" && event.data.object !== null
-      ? (event.data.object as any).customer
-      : null;
-
-  // Map customerId -> userId via subscription/event metadata
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;

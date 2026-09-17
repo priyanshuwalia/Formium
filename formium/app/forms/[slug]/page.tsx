@@ -116,9 +116,9 @@ const ResponsePage: React.FC<ResponsePageProps> = ({ params }) => {
       }
 
       handleInputChange(blockId, key);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Upload failed:", err);
-      setError(err.message || "Failed to upload file. Please try again.");
+      setError(err instanceof Error ? err.message : "Failed to upload file. Please try again.");
     }
   };
 
@@ -140,7 +140,7 @@ const ResponsePage: React.FC<ResponsePageProps> = ({ params }) => {
         body: JSON.stringify(payload),
       });
       setSubmitted(true);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Failed to submit responses:", err);
       setError("There was an error submitting your form. Please try again.");
     } finally {

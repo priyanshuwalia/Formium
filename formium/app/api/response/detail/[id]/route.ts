@@ -11,7 +11,7 @@ export async function GET(
     const response = await getResponseById(id);
     if (!response) return apiError("Response not found", 404);
     return NextResponse.json(response);
-  } catch (err: any) {
-    return apiError(err.message || "Failed to fetch response details", 500);
+  } catch (err) {
+    return apiError(err instanceof Error ? err.message : "Failed to fetch response details", 500);
   }
 }

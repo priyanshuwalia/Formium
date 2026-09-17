@@ -10,7 +10,7 @@ export async function GET(
   try {
     const responses = await getResponseByForm(formId);
     return NextResponse.json(responses);
-  } catch (err: any) {
-    return apiError(err.message || "Failed to fetch responses", 500);
+  } catch (err) {
+    return apiError(err instanceof Error ? err.message : "Failed to fetch responses", 500);
   }
 }

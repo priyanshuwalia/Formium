@@ -17,7 +17,7 @@ import {
   Sun,
 } from "lucide-react";
 import SidebarItem from "./SidebarItem";
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import { useAuth } from "@/context/auth/authContext";
 import { usePathname, useRouter } from "next/navigation";
 import { ThemeContext } from "@/context/ThemeProvider";
@@ -26,15 +26,16 @@ import Logo from "./Logo";
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [hovered, setHovered] = useState(false);
   const { user: User, logout } = useAuth();
   const { theme, toggleTheme } = useContext(ThemeContext);
   const pathname = usePathname();
   const router = useRouter();
 
-  useEffect(() => {
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
     setMobileOpen(false);
-  }, [pathname]);
+  }
 
   const handleLogout = async () => {
     await logout();
@@ -133,8 +134,6 @@ const Sidebar = () => {
                 </div>
                 <div
                   className="flex items-center text-gray-700 dark:text-gray-300 gap-2 px-2 py-1 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md cursor-pointer transition-colors"
-                  onMouseEnter={() => setHovered(true)}
-                  onMouseLeave={() => setHovered(false)}
                 >
                   <ChevronRight className="text-gray-500 dark:text-gray-400" size={18} />
                   <span className="truncate">My Workspace</span>

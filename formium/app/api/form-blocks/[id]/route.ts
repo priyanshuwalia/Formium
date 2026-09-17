@@ -18,8 +18,8 @@ export async function GET(
       return apiError("No blocks found", 404);
     }
     return NextResponse.json(blocks);
-  } catch (err: any) {
-    return apiError(err.message || "Failed to fetch blocks", 500);
+  } catch (err) {
+    return apiError(err instanceof Error ? err.message : "Failed to fetch blocks", 500);
   }
 }
 
@@ -38,13 +38,13 @@ export async function PUT(
   }
 
   try {
-    const updated = await updateBlockById(id, userId, parsed.data as any);
+    const updated = await updateBlockById(id, userId, parsed.data);
     if (updated.count === 0) {
       return apiError("Block not found or unauthorized", 404);
     }
     return NextResponse.json({ message: "Block updated successfully" });
-  } catch (err: any) {
-    return apiError(err.message || "Failed to update block", 500);
+  } catch (err) {
+    return apiError(err instanceof Error ? err.message : "Failed to update block", 500);
   }
 }
 
@@ -62,7 +62,7 @@ export async function DELETE(
       return apiError("Block not found or unauthorized", 404);
     }
     return NextResponse.json({ message: "Block deleted successfully" });
-  } catch (err: any) {
-    return apiError(err.message || "Failed to delete block", 500);
+  } catch (err) {
+    return apiError(err instanceof Error ? err.message : "Failed to delete block", 500);
   }
 }
