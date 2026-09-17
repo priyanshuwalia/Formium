@@ -1,21 +1,43 @@
 import { useState, useRef, useEffect } from "react";
-import { type FormBlock } from "../../types/form";
+import { type BlockType, type FormBlock } from "../../types/form";
+import type { DragHandleProps } from "./SortableBlock";
 import {
   Trash,
   Calendar,
   Star,
   X,
-  GripVertical
+  GripVertical,
+  GitBranch
 } from "lucide-react";
+
+const LOGIC_TYPES: BlockType[] = ["SHORT_ANS", "MULT_CHOICE", "CHECKBOXES", "DROPDOWN"];
+const CHOICE_TYPES: BlockType[] = ["MULT_CHOICE", "CHECKBOXES", "DROPDOWN"];
 
 interface BlockRendererProps {
   block: FormBlock;
   onChange: (id: string, updated: Partial<FormBlock>) => void;
   onDelete: (id: string) => void;
   onEnter: () => void;
+  dragHandleProps?: DragHandleProps;
+  allBlocks?: FormBlock[];
 }
 
-const BlockRenderer = ({ block, onChange, onDelete, onEnter }: BlockRendererProps) => {
+const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, allBlocks }: BlockRendererProps) => {
+  const [hoverRating, setHoverRating] = useState(0);
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [options, setOptions] = useState(block.options || ["Option 1"]);
+  const [showLogic, setShowLogic] = useState(false);
+  const [triggerBlockId, setTriggerBlockId] = useState("");
+  const [triggerValue, setTriggerValue] = useState("");
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto";
+      inputRef.current.style.height = inputRef.current.scrollHeight + "px";
+    }
+  }, [block.label]);
+
   if (block.type === "DIVIDER") {
     return <hr className="my-6 border-t border-gray-200 dark:border-gray-800" />;
   }
@@ -30,17 +52,46 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter }: BlockRendererProp
       />
     );
   }
-  const [hoverRating, setHoverRating] = useState(0);
-  const [selectedRating, setSelectedRating] = useState(0);
-  const [options, setOptions] = useState(block.options || ["Option 1"]);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.style.height = "auto";
-      inputRef.current.style.height = inputRef.current.scrollHeight + "px";
+  const blocks = allBlocks || [];
+  const currentIndex = blocks.findIndex((b) => b.id === block.id);
+  const triggerOptions = blocks.filter(
+    (b, i) => (currentIndex === -1 || i < currentIndex) && !!b.type,
+  );
+  const selectedTriggerBlock = blocks.find((b) => b.id === triggerBlockId) || null;
+  const existingRules = block.logic || [];
+  const isLogicEnabled = !!block.type && LOGIC_TYPES.includes(block.type);
+
+  const handleTriggerBlockChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const id = e.target.value;
+    setTriggerBlockId(id);
+    const trigger = blocks.find((b) => b.id === id);
+    if (trigger && trigger.type && CHOICE_TYPES.includes(trigger.type)) {
+      setTriggerValue(trigger.options?.[0] || "");
+    } else {
+      setTriggerValue("");
     }
-  }, [block.label]);
+  };
+
+  const addLogicRule = () => {
+    if (!triggerBlockId || !triggerValue.trim()) return;
+    const rule = { triggerBlockId, triggerValue: triggerValue.trim() };
+    onChange(block.id, { logic: [...(block.logic || []), rule] });
+    setTriggerBlockId("");
+    setTriggerValue("");
+  };
+
+  const removeLogicRule = (index: number) => {
+    onChange(block.id, {
+      logic: (block.logic || []).filter((_, i) => i !== index),
+    });
+  };
+
+  const getTriggerLabel = (ruleTriggerId: string) => {
+    const trigger = blocks.find((b) => b.id === ruleTriggerId);
+    if (!trigger) return "Previous block";
+    return trigger.label || `Block ${trigger.order + 1}`;
+  };
 
   const updateOption = (index: number, value: string) => {
     const updatedOptions = [...options];
@@ -182,8 +233,12 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter }: BlockRendererProp
   return (
     <div className="group/block relative -mx-4 px-4 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors duration-200">
 
-      {/* Drag Handle (Visual only for now) */}
-      <div className="absolute left-0 top-6 opacity-0 group-hover/block:opacity-100 text-gray-300 cursor-grab active:cursor-grabbing transition-opacity">
+      {/* Drag Handle */}
+      <div
+        {...dragHandleProps?.attributes}
+        {...dragHandleProps?.listeners}
+        className="absolute left-0 top-6 opacity-0 group-hover/block:opacity-100 text-gray-300 cursor-grab active:cursor-grabbing transition-opacity touch-none"
+      >
         <GripVertical size={16} />
       </div>
 
@@ -237,6 +292,98 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter }: BlockRendererProp
       <div className="pl-1">
         {rendererInput()}
       </div>
+
+      {isLogicEnabled && (
+        <div className={`mt-2 flex items-center gap-2 flex-wrap transition-opacity ${showLogic ? "opacity-100" : "opacity-0 group-hover/block:opacity-100"}`}>
+          <button
+            onClick={() => setShowLogic(!showLogic)}
+            className="text-xs font-medium text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 px-2 py-1 rounded hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
+          >
+            <GitBranch size={14} className="inline mr-1" />
+            Logic
+          </button>
+        </div>
+      )}
+
+      {isLogicEnabled && showLogic && (
+        <div className="mt-3 pl-2 pt-3 border-t border-gray-100 dark:border-gray-800 space-y-3">
+          {existingRules.length > 0 && (
+            <div className="space-y-1.5">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Show when</p>
+              {existingRules.map((rule, i) => (
+                <div key={i} className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800/40 rounded-lg px-3 py-1.5">
+                  <GitBranch size={12} className="text-indigo-500 flex-shrink-0" />
+                  <span>
+                    <span className="font-medium">{getTriggerLabel(rule.triggerBlockId)}</span>
+                    <span className="text-gray-400 mx-1">equals</span>
+                    <span className="font-medium text-indigo-600 dark:text-indigo-400">&quot;{rule.triggerValue}&quot;</span>
+                  </span>
+                  <button
+                    onClick={() => removeLogicRule(i)}
+                    className="ml-auto text-gray-400 hover:text-red-500 transition-colors"
+                    title="Remove rule"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex items-end gap-2 flex-wrap">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500">Previous block</label>
+              <select
+                value={triggerBlockId}
+                onChange={handleTriggerBlockChange}
+                className="text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30"
+              >
+                <option value="">Select a block...</option>
+                {triggerOptions.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.order + 1}. {b.label || "Untitled"}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {selectedTriggerBlock && (
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-gray-500">
+                  {selectedTriggerBlock.type && CHOICE_TYPES.includes(selectedTriggerBlock.type) ? "Answer" : "Value / pattern"}
+                </label>
+                {selectedTriggerBlock.type && CHOICE_TYPES.includes(selectedTriggerBlock.type) ? (
+                  <select
+                    value={triggerValue}
+                    onChange={(e) => setTriggerValue(e.target.value)}
+                    className="text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30"
+                  >
+                    {selectedTriggerBlock.options?.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    value={triggerValue}
+                    onChange={(e) => setTriggerValue(e.target.value)}
+                    placeholder="e.g. Yes"
+                    className="text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30"
+                  />
+                )}
+              </div>
+            )}
+
+            <button
+              onClick={addLogicRule}
+              disabled={!triggerBlockId || !triggerValue.trim()}
+              className="text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg px-3 py-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

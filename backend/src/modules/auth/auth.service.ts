@@ -1,9 +1,16 @@
 import prisma from "../../config/db.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { randomUUID } from "crypto";
+import {
+  signAccessToken,
+  signRefreshToken,
+  signPasswordResetToken,
+  verifyTokenOfType,
+  passwordFingerprint,
+} from "../../utils/tokens.js";
+import { sendPasswordResetEmail } from "../../lib/email.js";
 
-const JWT_SECRET = process.env.JWT_SECRET!;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
  * Expected, safe-to-surface auth failures. Anything that is not an AuthError
@@ -32,8 +39,6 @@ type GoogleUserInfo = {
     sub?: string;
 };
 
-const signToken = (userId: string) => jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: "3h" });
-
 const toAuthResponse = (user: {
     id: string;
     email: string;
@@ -41,7 +46,8 @@ const toAuthResponse = (user: {
     bio?: string | null;
     profilePicture?: string | null;
 }) => ({
-    token: signToken(user.id),
+    token: signAccessToken(user.id),
+    refreshToken: signRefreshToken(user.id),
     user: {
         id: user.id,
         email: user.email,
@@ -50,8 +56,6 @@ const toAuthResponse = (user: {
         profilePicture: user.profilePicture ?? undefined,
     },
 });
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const validateCredentials = (email: unknown, password: unknown) => {
     if (typeof email !== "string" || typeof password !== "string" || !email || !password) {
@@ -74,7 +78,6 @@ export const registerUser = async (email: string, password: string) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({ data: { email, password: hashedPassword } })
     return toAuthResponse(user);
-
 };
 
 export const loginUser = async (email: string, password: string) => {
@@ -87,7 +90,7 @@ export const loginUser = async (email: string, password: string) => {
     if (!isMatch) throw new AuthError("Incorrect email or password.", 401);
 
     return toAuthResponse(user);
-}
+};
 
 export const googleLogin = async (accessToken: string) => {
     if (!accessToken) throw new AuthError("Google sign-in is required.", 400);
@@ -116,6 +119,55 @@ export const googleLogin = async (accessToken: string) => {
             profilePicture: userInfo?.picture,
         },
     });
+
+    return toAuthResponse(user);
+};
+
+export const refreshSession = async (refreshToken?: string) => {
+    if (!refreshToken) throw new AuthError("Unauthorized", 401);
+
+    const payload = verifyTokenOfType(refreshToken, "refresh");
+    if (!payload) throw new AuthError("Unauthorized", 401);
+
+    const user = await prisma.user.findUnique({ where: { id: payload.id } });
+    if (!user) throw new AuthError("Unauthorized", 401);
+
+    return {
+        token: signAccessToken(user.id),
+        user: {
+            id: user.id,
+            email: user.email,
+            name: user.name ?? undefined,
+            bio: user.bio ?? undefined,
+            profilePicture: user.profilePicture ?? undefined,
+        },
+    };
+};
+
+export const requestPasswordReset = async (email: string) => {
+    const user = await prisma.user.findUnique({ where: { email } });
+    // Always report success to avoid leaking which emails are registered
+    if (!user) return;
+
+    const token = signPasswordResetToken(user.id, user.password);
+    try {
+        await sendPasswordResetEmail(user.email, token);
+    } catch (err) {
+        console.error("Failed to send password reset email:", err);
+    }
+};
+
+export const resetPassword = async (token: string, password: string) => {
+    const payload = verifyTokenOfType(token, "password-reset");
+    if (!payload?.fp) throw new AuthError("This reset link is invalid or has expired", 400);
+
+    const user = await prisma.user.findUnique({ where: { id: payload.id } });
+    if (!user || passwordFingerprint(user.password) !== payload.fp) {
+        throw new AuthError("This reset link is invalid or has expired", 400);
+    }
+
+    const hashed = await bcrypt.hash(password, 10);
+    await prisma.user.update({ where: { id: user.id }, data: { password: hashed } });
 
     return toAuthResponse(user);
 };

@@ -4,6 +4,9 @@ import { generateSlug } from "../../utils/slugify.js";
 export const createForm = async (data: {
     title: string;
     description?: string;
+    isPublished?: boolean;
+    theme?: string;
+    successText?: string;
     userId: string;
 
 }) => {
@@ -34,7 +37,7 @@ export const getFormbyUserId = async (userId: string) => {
         }
     })
 }
-export const updateFormById = async (formId: string, userId: string, data: { title?: string; description?: string; }) => {
+export const updateFormById = async (formId: string, userId: string, data: { title?: string; description?: string; isPublished?: boolean; theme?: string; successText?: string; }) => {
     return await prisma.form.updateMany({ where: { id: formId, userId }, data, })
 }
 

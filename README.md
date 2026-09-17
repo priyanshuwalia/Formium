@@ -7,7 +7,6 @@
 
 <!-- Badges -->
 <div align="center">
-
   <img src="https://img.shields.io/badge/license-MIT-yellow?style=for-the-badge" alt="License">
 </div>
 
@@ -15,8 +14,9 @@
 <div align="center" style="margin-top: 1rem;">
   <p><strong>Built with the tools and technologies:</strong></p>
   <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" alt="React">
-  <img src="https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js">
+  <img src="https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white" alt="Vite">
   <img src="https://img.shields.io/badge/node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js">
+  <img src="https://img.shields.io/badge/express-%23000000.svg?style=for-the-badge&logo=express&logoColor=white" alt="Express">
   <img src="https://img.shields.io/badge/postgres-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
   <img src="https://img.shields.io/badge/prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma">
   <img src="https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
@@ -34,9 +34,10 @@ Formium is a form builder that lets you create, publish, and collect responses f
 
 | Directory | Description |
 |---|---|
-| `formium/` | Single Next.js 16 app (App Router) — UI + API + background/realtime concerns |
+| `frontend/` | Vite + React + TypeScript single-page app (the UI) |
+| `backend/` | Express 5 + Prisma API server |
 
-The previous Express + Prisma backend and Vite frontend have been consolidated into `formium/`. All API routes live as Next.js Route Handlers under `formium/app/api/`.
+The app is split into a static frontend and a REST API. All API routes are mounted under `/api` on the backend.
 
 ---
 
@@ -48,59 +49,58 @@ The previous Express + Prisma backend and Vite frontend have been consolidated i
 - PostgreSQL (or Docker)
 - npm
 
-### Installation
+### Backend
 
-1. Clone the repository:
+```sh
+cd backend
+cp example.env .env
+# fill in DATABASE_URL, JWT_SECRET, and the optional integrations you need
+npm install
+npx prisma migrate deploy   # or `npx prisma migrate dev` for local development
+npm run dev
+```
 
-   ```sh
-   git clone https://github.com/priyanshuwalia/Formium
-   cd Formium
-   ```
+The API runs at http://localhost:4000.
 
-2. Set up the app:
+### Frontend
 
-   ```sh
-   cd formium
-   cp .env.example .env
-   # fill in DATABASE_URL, JWT_SECRET, and the optional integrations you need
-   npm install
-   npx prisma migrate dev
-   ```
+```sh
+cd frontend
+# create .env with:
+#   VITE_API_BASE_URL=http://localhost:4000/api
+npm install
+npm run dev
+```
 
-3. Run the dev server:
-
-   ```sh
-   npm run dev
-   ```
-
-   Then open http://localhost:3000.
+Then open http://localhost:5173.
 
 ### Commands
 
-| Command | Description |
-|---|---|
-| `npm run dev` | Next.js dev server |
-| `npm run build` | Production build |
-| `npm start` | Run production build |
-| `npm run lint` | ESLint (0 warnings/errors enforced) |
-| `npm test` | Vitest unit tests |
+| Directory | Command | Description |
+|---|---|---|
+| `frontend/` | `npm run dev` | Vite dev server |
+| `frontend/` | `npm run build` | Type-check + production build |
+| `frontend/` | `npm run lint` | ESLint |
+| `backend/` | `npm run dev` | Express dev server (tsx watch) |
+| `backend/` | `npm run build` | Compile TypeScript to `dist/` |
+| `backend/` | `npm start` | Run the compiled server |
 
 ---
 
 ## Feature overview
 
 - **Slash-command form builder** — type `/` to insert any block type
-- **12 block types** — short/long answers, multiple choice, checkboxes, dropdown, number, email, phone, link, date, rating, file upload
-- **Drag-and-drop editor** — reorder blocks with dnd-kit (drag the grip, then drop)
+- **12+ block types** — short/long answers, multiple choice, checkboxes, dropdown, number, email, phone, link, date, rating, file upload, divider, heading
+- **Drag-and-drop editor** — reorder blocks with dnd-kit
 - **Logic jumps** — conditionally show blocks based on earlier answers
 - **Publish & share** — each form gets a unique slug URL + embed widget (`<iframe>`)
 - **Responses** — per-form response tables, detail views, and CSV export
 - **Analytics** — response counts, 7-day trends, top-performing forms
 - **AI Response Intelligence** — one-click Claude summary, themes, and notable responses
-- **Auth** — email/password (bcrypt) + Google sign-in, httpOnly cookie JWT sessions with refresh tokens
+- **Auth** — email/password (bcrypt) + Google sign-in, JWT access tokens with refresh
 - **Billing** — Stripe subscriptions (Free/Pro tiers) with plan limits
 - **File uploads** — Cloudflare R2 presigned uploads (Pro plan)
-- **Email** — Resend transactional email (new-response notifications)
+- **Email** — Resend transactional email (password reset, new-response notifications)
 - **Error tracking** — Sentry
 - **Dark mode** — light/dark theme toggle
 - **Templates** — quick-start contact, event registration, and feedback templates
@@ -109,30 +109,29 @@ The previous Express + Prisma backend and Vite frontend have been consolidated i
 
 ## API
 
-Route Handlers under `formium/app/api/`:
+Routes mounted under `/api`:
 
-- `/api/auth/*` — register, login, google, logout, me
-- `/api/forms` — create; `/api/forms/[slug]` — get/update/delete; `/api/forms/dashboard` — list
-- `/api/form-blocks` and `/api/form-blocks/[id]` — CRUD for blocks
-- `/api/response` — submit; `/api/response/[formId]`, `/api/response/detail/[id]` — read; `/api/response/export` — CSV
+- `/api/auth/*` — register, login, google, refresh, logout, forgot/reset password
+- `/api/forms` — create; `/api/forms/[slug]` — get; `/api/forms/dashboard` — list; `/api/forms/:id` — update/delete
+- `/api/form-blocks` and `/api/form-blocks/:id` — CRUD for blocks
+- `/api/response` — submit; `/api/response/:formId`, `/api/response/detail/:id` — read; `/api/response/export` — CSV
 - `/api/analytics` — aggregate stats
 - `/api/ai/analyze` — AI response intelligence
-- `/api/billing/checkout` / `portal` / `webhook` / `status` — Stripe billing
+- `/api/billing/status` / `checkout` / `portal` / `webhook` — Stripe billing
 - `/api/upload` — R2 presigned upload URL
 - `/api/user` — profile update/delete
 
 ---
 
-## Environment (see `.env.example`)
+## Environment
 
-`DATABASE_URL`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, `RESEND_API_KEY`, `R2_*` (endpoint/access key/secret/bucket), `SENTRY_*`, `STRIPE_*`, `ANTHROPIC_API_KEY`.
+### Backend (`backend/example.env`)
 
----
+`DATABASE_URL`, `JWT_SECRET`, `APP_URL`, `CORS_ORIGINS`, `STRIPE_*`, `R2_*`, `RESEND_API_KEY`, `EMAIL_FROM`, `ANTHROPIC_API_KEY`, `SENTRY_DSN`.
 
-## Testing & CI
+### Frontend
 
-- Vitest unit tests in `formium/tests/` cover auth, form service, and validation logic.
-- GitHub Actions workflow (`.github/workflows/ci.yml`) runs lint, typecheck, tests, and build.
+`VITE_API_BASE_URL` — the backend base URL including `/api`.
 
 ---
 

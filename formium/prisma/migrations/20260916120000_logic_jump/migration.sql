@@ -1,1 +1,0 @@
-ALTER TABLE "FormBlock" ADD COLUMN "logic" JSONB;

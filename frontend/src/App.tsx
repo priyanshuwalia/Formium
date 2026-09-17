@@ -16,6 +16,8 @@ import UserHome from './pages/UserHome';
 import FormResponses from './pages/FormResponses';
 import ResponseDetails from './pages/ResponseDetails';
 import CompleteProfile from './pages/CompleteProfile';
+import ResetPassword from './pages/auth/ResetPassword';
+import EmbedForm from './pages/EmbedForm';
 import ProtectedRoute from './components/ProtectedRoute';
 
 
@@ -33,6 +35,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
+            <Route path='/reset-password' element={<ResetPassword />} />
 
             <Route element={<ProtectedRoute />}>
               <Route path='/complete-profile' element={<CompleteProfile />} />
@@ -50,6 +53,7 @@ function App() {
             </Route>
 
             <Route path='/forms/:slug' element={<ResponsePage />} />
+            <Route path='/forms/:slug/embed' element={<EmbedForm />} />
             <Route path='/forms/:slug/published' element={<PublishSuccessPage />} />
 
           </Routes>

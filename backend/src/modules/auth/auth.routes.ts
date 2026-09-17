@@ -1,9 +1,29 @@
 import { Router } from "express";
-import { googleLogin, login, register } from "./auth.controller.js"
+import {
+  forgotPassword,
+  googleLogin,
+  login,
+  logout,
+  refresh,
+  register,
+  resetPassword,
+} from "./auth.controller.js"
+import { validate } from "../../utils/validation.js";
+import {
+  forgotPasswordSchema,
+  googleSchema,
+  loginSchema,
+  registerSchema,
+  resetPasswordSchema,
+} from "../../utils/validation.js";
 
 const router = Router();
-router.post("/register", register);
-router.post("/login", login);
-router.post("/google", googleLogin);
+router.post("/register", validate(registerSchema), register);
+router.post("/login", validate(loginSchema), login);
+router.post("/google", validate(googleSchema), googleLogin);
+router.post("/refresh", refresh);
+router.post("/logout", logout);
+router.post("/forgot-password", validate(forgotPasswordSchema), forgotPassword);
+router.post("/reset-password", validate(resetPasswordSchema), resetPassword);
 
 export default router;

@@ -13,11 +13,7 @@ export const getBlocksByFormIdHandler = async (req, res) => {
     try {
         const { formId } = req.params;
         const blocks = await FormBlockService.getBlocksByFormId(formId);
-        if (!blocks || blocks.length === 0) {
-            res.status(404).json({ error: "no blocks found" });
-            return;
-        }
-        res.json(blocks);
+        res.json(blocks ?? []);
     }
     catch (err) {
         console.error("Error fetching form blocks:", err);

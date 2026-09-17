@@ -1,14 +1,15 @@
 import { Router } from "express";
 import { createFormHandler, deleteFormHandler, getFormHandler, getUserFormsHandler, updateFormHandler } from "./form.controller.js";
 import { verifyToken } from "../../middleware/verifyToken.js"
+import { validate, createFormSchema, updateFormSchema } from "../../utils/validation.js";
 
 
 const router = Router();
 
-router.post("/", verifyToken, createFormHandler);
+router.post("/", verifyToken, validate(createFormSchema), createFormHandler);
 router.get("/dashboard", verifyToken, getUserFormsHandler);
 router.get("/:slug", getFormHandler);
-router.put("/:id", verifyToken, updateFormHandler)
+router.put("/:id", verifyToken, validate(updateFormSchema), updateFormHandler)
 router.delete("/:id", verifyToken, deleteFormHandler);
 
 export default router;

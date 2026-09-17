@@ -2,8 +2,24 @@ import { useEffect, useRef, useState } from "react";
 import SlashCommand from "../components/formBuilder/SlashCommand";
 import { type BlockType, type FormBlock } from "../types/form";
 import { v4 as uuid } from "uuid";
-import { Plus, File, Palette, ArrowRight, Trash } from "lucide-react";
+import { Plus, File, Palette, ArrowRight, Trash, GripVertical } from "lucide-react";
 import BlockRenderer from "../components/formBuilder/BlockRenderer";
+import SortableBlock from "../components/formBuilder/SortableBlock";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import API from "../api/axios";
 import { getErrorMessage } from "../utils/apiError";
 import { useAuth } from "../context/AuthContext";
@@ -44,6 +60,28 @@ const CreateForm: React.FC = () => {
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const titleInputRef = useRef<HTMLInputElement | null>(null);
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    setInputBlocks((prev) => {
+      const oldIndex = prev.findIndex((block) => block.id === active.id);
+      const newIndex = prev.findIndex((block) => block.id === over.id);
+      if (oldIndex === -1 || newIndex === -1) return prev;
+      return arrayMove(prev, oldIndex, newIndex).map((block, index) => ({
+        ...block,
+        order: index,
+      }));
+    });
+  };
+
 
   useEffect(() => {
     if (location.state && location.state.blocks) {
@@ -69,14 +107,15 @@ const CreateForm: React.FC = () => {
       return;
     }
 
+    let finalTitle: string;
     if (formTitle.trim() === "") {
       const title = prompt("Please enter a title for your form:", "Untitled Form");
       if (!title || title.trim() === "") return;
       setFormTitle(title);
       // Continue with the newly set title (using local variable for immediate use)
-      var finalTitle = title;
+      finalTitle = title;
     } else {
-      var finalTitle = formTitle;
+      finalTitle = formTitle;
     }
 
     setPublishing(true);
@@ -101,6 +140,7 @@ const CreateForm: React.FC = () => {
         required: block.required,
         placeholder: block.placeholder,
         options: block.options,
+        logic: block.logic || null,
         order: block.order,
         formId: form.id,
       }));
@@ -354,49 +394,73 @@ const CreateForm: React.FC = () => {
 
             {/* Blocks */}
             <div className="space-y-2">
-              {inputBlocks.map((block, idx) => (
-                <div key={block.id} className="relative group/wrapper">
-                  {block.type ? (
-                    <BlockRenderer
-                      block={block}
-                      onEnter={() => handleCreateBlock(idx)}
-                      onChange={handleBlockUpdate}
-                      onDelete={handleBlockDelete}
-                    />
-                  ) : (
-                    <div className="relative my-2 group">
-                      <div className="absolute left-0 top-1/2 -translate-y-1/2 -ml-8 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 cursor-pointer transition-colors" onClick={() => handleBlockDelete(block.id)}>
-                        <Trash size={18} />
-                      </div>
-                      <input
-                        ref={(el) => { inputRefs.current[block.id] = el }}
-                        value={block.value}
-                        onChange={(e) => handleInputChange(e, idx)}
-                        onKeyDown={(e) => handleBlockKeyDown(e, idx)}
-                        placeholder="Type '/' for commands"
-                        className="w-full text-lg py-2 bg-transparent border-none focus:ring-0 focus:outline-none text-gray-700 dark:text-gray-200 placeholder-gray-300 dark:placeholder-gray-600"
-                      />
-                    </div>
-                  )}
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={inputBlocks.map((block) => block.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {inputBlocks.map((block, idx) => (
+                    <SortableBlock key={block.id} id={block.id}>
+                      {({ listeners, attributes }) => (
+                        <div className="relative group/wrapper">
+                          {block.type ? (
+                            <BlockRenderer
+                              block={block}
+                              onEnter={() => handleCreateBlock(idx)}
+                              onChange={handleBlockUpdate}
+                              onDelete={handleBlockDelete}
+                              dragHandleProps={{ listeners, attributes }}
+                              allBlocks={inputBlocks}
+                            />
+                          ) : (
+                            <div className="relative my-2 group">
+                              <div
+                                {...attributes}
+                                {...listeners}
+                                className="absolute left-0 top-1/2 -translate-y-1/2 -ml-8 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-grab active:cursor-grabbing transition-colors touch-none"
+                              >
+                                <GripVertical size={18} />
+                              </div>
+                              <div className="absolute right-0 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 cursor-pointer transition-colors" onClick={() => handleBlockDelete(block.id)}>
+                                <Trash size={18} />
+                              </div>
+                              <input
+                                ref={(el) => { inputRefs.current[block.id] = el }}
+                                value={block.value}
+                                onChange={(e) => handleInputChange(e, idx)}
+                                onKeyDown={(e) => handleBlockKeyDown(e, idx)}
+                                placeholder="Type '/' for commands"
+                                className="w-full text-lg py-2 bg-transparent border-none focus:ring-0 focus:outline-none text-gray-700 dark:text-gray-200 placeholder-gray-300 dark:placeholder-gray-600"
+                              />
+                            </div>
+                          )}
 
-                  {/* Slash Command Menu */}
-                  {showSlashCommand &&
-                    block.value?.startsWith("/") &&
-                    activeBlock?.id === block.id && (
-                      <div className="absolute top-full left-0 z-50 mt-2 w-72 bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                        <SlashCommand
-                          blockId={block.id}
-                          query={activeQuery}
-                          onSelect={handleSelectBlock}
-                          onClose={() => setShowSlashCommand(false)}
-                          selectedIdx={selectedIdx}
-                          setSelectedIdx={setSelectedIdx}
-                          filteredOptions={filteredOptions}
-                        />
-                      </div>
-                    )}
-                </div>
-              ))}
+                          {/* Slash Command Menu */}
+                          {showSlashCommand &&
+                            block.value?.startsWith("/") &&
+                            activeBlock?.id === block.id && (
+                              <div className="absolute top-full left-0 z-50 mt-2 w-72 bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                                <SlashCommand
+                                  blockId={block.id}
+                                  query={activeQuery}
+                                  onSelect={handleSelectBlock}
+                                  onClose={() => setShowSlashCommand(false)}
+                                  selectedIdx={selectedIdx}
+                                  setSelectedIdx={setSelectedIdx}
+                                  filteredOptions={filteredOptions}
+                                />
+                              </div>
+                            )}
+                        </div>
+                      )}
+                    </SortableBlock>
+                  ))}
+                </SortableContext>
+              </DndContext>
 
               {/* Add New / Empty State */}
               <div

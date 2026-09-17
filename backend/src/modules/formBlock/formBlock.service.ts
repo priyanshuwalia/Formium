@@ -1,41 +1,54 @@
 import prisma from "../../config/db.js";
-import { BlockType } from "@prisma/client";
-export const createFormBlock = async (data: {
+import { BlockType, Prisma } from "@prisma/client";
+
+type BlockData = {
     formId: string;
     type: BlockType;
-    label:string;
+    label: string;
     required: boolean;
     placeholder?: string;
     options?: string[];
+    logic?: Prisma.InputJsonValue | null;
     order: number;
-})=>{
-        return await prisma.formBlock.create({data});
+};
+
+const withLogic = <T extends { logic?: Prisma.InputJsonValue | null }>(data: T) => {
+    const { logic, ...rest } = data;
+    if (logic === undefined) return rest;
+    return { ...rest, logic: logic === null ? Prisma.JsonNull : logic };
+};
+
+export const createFormBlock = async (data: BlockData) => {
+    return await prisma.formBlock.create({ data: withLogic(data) });
 }
-export const getBlocksByFormId = async(formId: string)=>{
-    return await prisma.formBlock.findMany({where: {formId}, orderBy: {order:"asc"}})
+export const getBlocksByFormId = async (formId: string) => {
+    return await prisma.formBlock.findMany({ where: { formId }, orderBy: { order: "asc" } })
 }
 export const updateBlockById = async (
-    blockId: string, userId:string,
+    blockId: string, userId: string,
     data: {
         label?: string
-    required?:boolean;
-    placeholder?: string;
-    options?: any;
-    order?: number;
+        type?: BlockType;
+        required?: boolean;
+        placeholder?: string;
+        options?: Prisma.InputJsonValue;
+        logic?: Prisma.InputJsonValue | null;
+        order?: number;
     }
 
-)=>{
+) => {
     return await prisma.formBlock.updateMany({
-        where:{id: blockId, form: {userId,}},data,
+        where: { id: blockId, form: { userId, } },
+        data: withLogic(data) as Prisma.FormBlockUpdateManyMutationInput,
     })
 }
 export const deleteBlockById = async (blockId: string, userId: string) => {
-  return await prisma.formBlock.deleteMany({
-    where: {
-      id: blockId,
-      form: {
-        userId,
-      },
-    },
-  });
+    return await prisma.formBlock.deleteMany({
+        where: {
+            id: blockId,
+            form: {
+                userId,
+            },
+        },
+    });
 };

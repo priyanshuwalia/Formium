@@ -22,6 +22,13 @@ model User {
   name           String?
   bio            String?
   profilePicture String?
+
+  // Billing
+  stripeCustomerId String?
+  subscriptionId   String?
+  plan             Plan      @default(FREE)
+  planStatus       String    @default("inactive")
+  planRenewsAt     DateTime?
 }
 
 model Form {
@@ -64,6 +71,7 @@ model FormBlock {
   required      Boolean        @default(true)
   placeholder   String?
   options       Json?
+  logic         Json?
   order         Int
   form          Form           @relation(fields: [formId], references: [id], onDelete: Cascade)
   formId        String
@@ -84,4 +92,12 @@ enum BlockType {
   LINK
   FILE_UPLOAD
   DATE
+  RATING
+  DIVIDER
+  H3
+}
+
+enum Plan {
+  FREE
+  PRO
 }
