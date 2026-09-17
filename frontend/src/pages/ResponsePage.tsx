@@ -71,10 +71,50 @@ const ResponsePage: React.FC = () => {
     currentResponses: ResponsesState,
   ): boolean => {
     if (!block.logic || block.logic.length === 0) return true;
-    return block.logic.some((rule) => {
-      const answer = String(currentResponses[rule.triggerBlockId] || "");
-      return answer.toLowerCase() === rule.triggerValue.toLowerCase();
+    const showRules = block.logic.filter((rule) => !rule.jumpToBlockId);
+    if (showRules.length === 0) return true;
+    return showRules.some((rule) => {
+      const answer = currentResponses[rule.triggerBlockId];
+      const values = Array.isArray(answer) ? answer : [String(answer || "")];
+      return values.some((value) => value.toLowerCase() === rule.triggerValue.toLowerCase());
     });
+  };
+
+  const answerMatches = (
+    answer: ResponsesState[string],
+    triggerValue: string,
+  ) => {
+    const values = Array.isArray(answer) ? answer : [String(answer || "")];
+    return values.some((value) => value.toLowerCase() === triggerValue.toLowerCase());
+  };
+
+  const getVisibleBlocks = (blocks: FormBlock[]) => {
+    const visibleByCondition = blocks.filter((block) =>
+      shouldShowBlock(block, responses),
+    );
+    const visibleIds = new Set(visibleByCondition.map((block) => block.id));
+    const output: FormBlock[] = [];
+    let skippingTo: string | null = null;
+
+    for (const block of visibleByCondition) {
+      if (skippingTo && block.id !== skippingTo) continue;
+      if (skippingTo === block.id) skippingTo = null;
+
+      output.push(block);
+
+      const jumpRule = (block.logic || []).find(
+        (rule) =>
+          rule.jumpToBlockId &&
+          visibleIds.has(rule.jumpToBlockId) &&
+          answerMatches(responses[block.id], rule.triggerValue),
+      );
+
+      if (jumpRule?.jumpToBlockId) {
+        skippingTo = jumpRule.jumpToBlockId;
+      }
+    }
+
+    return output;
   };
 
   const handleFileChange = async (
@@ -115,9 +155,7 @@ const ResponsePage: React.FC = () => {
     e.preventDefault();
     setSubmitting(true);
 
-    const visibleBlocks = (form?.blocks || []).filter((block) =>
-      shouldShowBlock(block, responses),
-    );
+    const visibleBlocks = getVisibleBlocks(form?.blocks || []);
 
     const payload = {
       formId: form?.id,
@@ -192,12 +230,12 @@ const ResponsePage: React.FC = () => {
   }
 
   return (
-    <div className="bg-gray-50 dark:bg-black min-h-screen font-inter flex flex-col items-center py-12 px-4 sm:px-6 transition-colors duration-300">
+    <div className="bg-gray-50 dark:bg-gray-950 min-h-screen font-inter flex flex-col items-center py-12 px-4 sm:px-6 transition-colors duration-300">
       <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
         {/* Form Card */}
-        <div className="bg-white dark:bg-gray-900 rounded-[2rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 rounded-[2.25rem] shadow-xl shadow-gray-200/60 dark:shadow-black/20 border border-gray-100 dark:border-gray-800 overflow-hidden">
           {/* Header */}
-          <div className="bg-gray-50/50 dark:bg-gray-800/50 p-8 sm:p-12 border-b border-gray-100 dark:border-gray-800">
+          <div className="bg-gray-50/80 dark:bg-gray-800/60 p-8 sm:p-12 border-b border-gray-100 dark:border-gray-800">
             <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">
               {form.title}
             </h1>
@@ -209,8 +247,7 @@ const ResponsePage: React.FC = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="p-8 sm:p-12 space-y-8">
-            {form.blocks
-              .filter((block) => shouldShowBlock(block, responses))
+            {getVisibleBlocks(form.blocks)
               .map((block) => {
               const { id, type, label, placeholder, required, options } = block;
               const inputId = `block-${id}`;
@@ -233,7 +270,7 @@ const ResponsePage: React.FC = () => {
               );
 
               const inputClasses =
-                "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-400 transition-all duration-200 shadow-sm";
+                "w-full px-4 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 dark:focus:border-indigo-400 transition-all duration-200 shadow-sm";
 
               switch (type) {
                 case "SHORT_ANS":
@@ -282,7 +319,7 @@ const ResponsePage: React.FC = () => {
                       {options?.map((opt) => (
                         <label
                           key={opt}
-                          className="flex items-center gap-3 p-3 rounded-xl border border-transparent hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:border-indigo-100 dark:hover:border-gray-700 cursor-pointer transition-all"
+                          className="flex items-center gap-3 p-3 rounded-2xl border border-transparent hover:bg-gray-50 dark:hover:bg-gray-800/60 hover:border-indigo-100 dark:hover:border-gray-700 cursor-pointer transition-all"
                         >
                           <input
                             type="radio"
@@ -310,7 +347,7 @@ const ResponsePage: React.FC = () => {
                       {options?.map((opt) => (
                         <label
                           key={opt}
-                          className="flex items-center gap-3 p-3 rounded-xl border border-transparent hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:border-indigo-100 dark:hover:border-gray-700 cursor-pointer transition-all"
+                          className="flex items-center gap-3 p-3 rounded-2xl border border-transparent hover:bg-gray-50 dark:hover:bg-gray-800/60 hover:border-indigo-100 dark:hover:border-gray-700 cursor-pointer transition-all"
                         >
                           <input
                             type="checkbox"
@@ -417,7 +454,7 @@ const ResponsePage: React.FC = () => {
 
                 case "FILE_UPLOAD":
                   return fieldWrapper(
-                    <div className="relative border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-8 text-center hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    <div className="relative border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-3xl p-8 text-center hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors">
                       <input
                         id={inputId}
                         type="file"
@@ -469,7 +506,7 @@ const ResponsePage: React.FC = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 dark:bg-white dark:hover:bg-gray-200 text-white dark:text-black py-4 px-8 rounded-xl font-bold text-lg shadow-xl shadow-indigo-500/20 dark:shadow-none transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 dark:bg-white dark:hover:bg-gray-200 text-white dark:text-black py-4 px-8 rounded-2xl font-bold text-lg shadow-xl shadow-indigo-500/20 dark:shadow-none transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {submitting ? (
                   <span className="flex items-center justify-center gap-2">

@@ -12,6 +12,7 @@ import {
 
 const LOGIC_TYPES: BlockType[] = ["SHORT_ANS", "MULT_CHOICE", "CHECKBOXES", "DROPDOWN"];
 const CHOICE_TYPES: BlockType[] = ["MULT_CHOICE", "CHECKBOXES", "DROPDOWN"];
+const JUMP_TYPES: BlockType[] = ["MULT_CHOICE", "CHECKBOXES", "DROPDOWN"];
 
 interface BlockRendererProps {
   block: FormBlock;
@@ -29,6 +30,8 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
   const [showLogic, setShowLogic] = useState(false);
   const [triggerBlockId, setTriggerBlockId] = useState("");
   const [triggerValue, setTriggerValue] = useState("");
+  const [jumpValue, setJumpValue] = useState("");
+  const [jumpToBlockId, setJumpToBlockId] = useState("");
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -61,6 +64,8 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
   const selectedTriggerBlock = blocks.find((b) => b.id === triggerBlockId) || null;
   const existingRules = block.logic || [];
   const isLogicEnabled = !!block.type && LOGIC_TYPES.includes(block.type);
+  const isJumpEnabled = !!block.type && JUMP_TYPES.includes(block.type);
+  const jumpTargetOptions = blocks.filter((b, i) => currentIndex !== -1 && i > currentIndex && !!b.type);
 
   const handleTriggerBlockChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const id = e.target.value;
@@ -81,6 +86,18 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
     setTriggerValue("");
   };
 
+  const addJumpRule = () => {
+    if (!jumpValue.trim() || !jumpToBlockId) return;
+    const rule = {
+      triggerBlockId: block.id,
+      triggerValue: jumpValue.trim(),
+      jumpToBlockId,
+    };
+    onChange(block.id, { logic: [...(block.logic || []), rule] });
+    setJumpValue("");
+    setJumpToBlockId("");
+  };
+
   const removeLogicRule = (index: number) => {
     onChange(block.id, {
       logic: (block.logic || []).filter((_, i) => i !== index),
@@ -91,6 +108,12 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
     const trigger = blocks.find((b) => b.id === ruleTriggerId);
     if (!trigger) return "Previous block";
     return trigger.label || `Block ${trigger.order + 1}`;
+  };
+
+  const getTargetLabel = (targetId?: string) => {
+    const target = blocks.find((b) => b.id === targetId);
+    if (!target) return "end of form";
+    return target.label || `Block ${target.order + 1}`;
   };
 
   const updateOption = (index: number, value: string) => {
@@ -113,7 +136,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
   };
 
   // Modern input styles: clean border, subtle shadow, ring on focus
-  const sharedInputClasses = "transition-all duration-200 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2.5 shadow-sm focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 focus:border-indigo-500 dark:focus:border-indigo-400 text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-800/50 placeholder:text-gray-400 dark:placeholder:text-gray-500 w-full";
+  const sharedInputClasses = "transition-all duration-200 rounded-2xl border border-gray-200 dark:border-gray-700 px-4 py-2.5 shadow-sm focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 focus:border-indigo-500 dark:focus:border-indigo-400 text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-800/70 placeholder:text-gray-400 dark:placeholder:text-gray-500 w-full";
 
   const rendererInput = () => {
     switch (block.type) {
@@ -231,7 +254,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
 
 
   return (
-    <div className="group/block relative -mx-4 px-4 py-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors duration-200">
+    <div className="group/block relative -mx-4 px-4 py-4 rounded-3xl hover:bg-gray-100/70 dark:hover:bg-gray-800/45 transition-colors duration-200">
 
       {/* Drag Handle */}
       <div
@@ -268,7 +291,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
         </div>
 
         <div className="flex items-center gap-2 opacity-0 group-hover/block:opacity-100 transition-opacity">
-          <label className="flex items-center gap-1.5 cursor-pointer text-xs font-medium text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+          <label className="flex items-center gap-1.5 cursor-pointer text-xs font-medium text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 px-2 py-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition">
             <input
               type="checkbox"
               checked={block.required}
@@ -280,7 +303,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
           {onDelete && (
             <button
               onClick={() => onDelete(block.id)}
-              className="text-gray-400 hover:text-red-500 p-1.5 rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+              className="text-gray-400 hover:text-red-500 p-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
               title="Delete block"
             >
               <Trash size={16} />
@@ -297,7 +320,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
         <div className={`mt-2 flex items-center gap-2 flex-wrap transition-opacity ${showLogic ? "opacity-100" : "opacity-0 group-hover/block:opacity-100"}`}>
           <button
             onClick={() => setShowLogic(!showLogic)}
-            className="text-xs font-medium text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 px-2 py-1 rounded hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
+            className="text-xs font-medium text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 px-3 py-1.5 rounded-full hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
           >
             <GitBranch size={14} className="inline mr-1" />
             Logic
@@ -309,14 +332,20 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
         <div className="mt-3 pl-2 pt-3 border-t border-gray-100 dark:border-gray-800 space-y-3">
           {existingRules.length > 0 && (
             <div className="space-y-1.5">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Show when</p>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Active rules</p>
               {existingRules.map((rule, i) => (
-                <div key={i} className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800/40 rounded-lg px-3 py-1.5">
+                <div key={i} className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800/70 rounded-2xl px-3 py-2">
                   <GitBranch size={12} className="text-indigo-500 flex-shrink-0" />
                   <span>
                     <span className="font-medium">{getTriggerLabel(rule.triggerBlockId)}</span>
                     <span className="text-gray-400 mx-1">equals</span>
                     <span className="font-medium text-indigo-600 dark:text-indigo-400">&quot;{rule.triggerValue}&quot;</span>
+                    {rule.jumpToBlockId && (
+                      <>
+                        <span className="text-gray-400 mx-1">jump to</span>
+                        <span className="font-medium">{getTargetLabel(rule.jumpToBlockId)}</span>
+                      </>
+                    )}
                   </span>
                   <button
                     onClick={() => removeLogicRule(i)}
@@ -330,13 +359,15 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
             </div>
           )}
 
-          <div className="flex items-end gap-2 flex-wrap">
+          <div className="rounded-3xl border border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-900/70 p-3">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Show this question when</p>
+            <div className="flex items-end gap-2 flex-wrap">
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-gray-500">Previous block</label>
               <select
                 value={triggerBlockId}
                 onChange={handleTriggerBlockChange}
-                className="text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30"
+                className="text-xs rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30"
               >
                 <option value="">Select a block...</option>
                 {triggerOptions.map((b) => (
@@ -356,7 +387,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
                   <select
                     value={triggerValue}
                     onChange={(e) => setTriggerValue(e.target.value)}
-                    className="text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30"
+                    className="text-xs rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30"
                   >
                     {selectedTriggerBlock.options?.map((opt) => (
                       <option key={opt} value={opt}>{opt}</option>
@@ -368,7 +399,7 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
                     value={triggerValue}
                     onChange={(e) => setTriggerValue(e.target.value)}
                     placeholder="e.g. Yes"
-                    className="text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30"
+                    className="text-xs rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30"
                   />
                 )}
               </div>
@@ -377,11 +408,55 @@ const BlockRenderer = ({ block, onChange, onDelete, onEnter, dragHandleProps, al
             <button
               onClick={addLogicRule}
               disabled={!triggerBlockId || !triggerValue.trim()}
-              className="text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg px-3 py-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-2xl px-3 py-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Save
             </button>
+            </div>
           </div>
+
+          {isJumpEnabled && jumpTargetOptions.length > 0 && (
+            <div className="rounded-3xl border border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-900/70 p-3">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Logic jump from this question</p>
+              <div className="flex items-end gap-2 flex-wrap">
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-medium text-gray-500">If answer is</label>
+                  <select
+                    value={jumpValue}
+                    onChange={(e) => setJumpValue(e.target.value)}
+                    className="text-xs rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30"
+                  >
+                    <option value="">Choose answer...</option>
+                    {block.options?.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-medium text-gray-500">Jump to</label>
+                  <select
+                    value={jumpToBlockId}
+                    onChange={(e) => setJumpToBlockId(e.target.value)}
+                    className="text-xs rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900/30"
+                  >
+                    <option value="">Select destination...</option>
+                    {jumpTargetOptions.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.order + 1}. {b.label || "Untitled"}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <button
+                  onClick={addJumpRule}
+                  disabled={!jumpValue.trim() || !jumpToBlockId}
+                  className="text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-2xl px-3 py-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Add jump
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

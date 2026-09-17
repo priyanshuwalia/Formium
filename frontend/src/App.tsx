@@ -19,6 +19,8 @@ import CompleteProfile from './pages/CompleteProfile';
 import ResetPassword from './pages/auth/ResetPassword';
 import EmbedForm from './pages/EmbedForm';
 import ProtectedRoute from './components/ProtectedRoute';
+import HelpPage from './pages/HelpPage';
+import Profile from './pages/Profile';
 
 
 
@@ -47,6 +49,10 @@ function App() {
                 <Route path='/forms' element={<Dashboard />} />
                 <Route path='/analytics' element={<Analytics />} />
                 <Route path='/settings' element={<Settings />} />
+                <Route path='/profile' element={<Profile />} />
+                <Route path='/get-started' element={<HelpPage variant="get-started" />} />
+                <Route path='/how-to-guides' element={<HelpPage variant="how-to" />} />
+                <Route path='/help-center' element={<HelpPage variant="help-center" />} />
                 <Route path='/forms/:slug/responses' element={<FormResponses />} />
                 <Route path='/forms/:slug/responses/:responseId' element={<ResponseDetails />} />
               </Route>

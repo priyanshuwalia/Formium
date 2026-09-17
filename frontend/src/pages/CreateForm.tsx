@@ -56,6 +56,7 @@ const CreateForm: React.FC = () => {
   const [activeQuery, setActiveQuery] = useState<string>("");
   const [coverColor, setCoverColor] = useState<string>("#6E829B");
   const [showColorPicker, setShowColorPicker] = useState<boolean>(false);
+  const [activeWorkspace, setActiveWorkspace] = useState<string>("My Workspace");
 
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const titleInputRef = useRef<HTMLInputElement | null>(null);
@@ -89,6 +90,16 @@ const CreateForm: React.FC = () => {
       setInputBlocks(location.state.blocks);
     }
   }, [location.state]);
+
+  useEffect(() => {
+    const readWorkspace = () => {
+      const stored = localStorage.getItem("activeWorkspaceName");
+      if (stored) setActiveWorkspace(stored);
+    };
+    readWorkspace();
+    window.addEventListener("workspace-change", readWorkspace);
+    return () => window.removeEventListener("workspace-change", readWorkspace);
+  }, []);
 
   const filteredOptions = blockOptions.filter((option) =>
     option.label.toLowerCase().includes(activeQuery.toLowerCase())
@@ -329,7 +340,7 @@ const CreateForm: React.FC = () => {
 
   return (
 
-    <div className="flex-1 overflow-y-auto bg-gray-50/50 dark:bg-black">
+    <div className="flex-1 overflow-y-auto bg-gray-50/50 dark:bg-gray-950">
       {/* Cover Image Area */}
       <div
         className="relative h-64 transition-all duration-500 ease-in-out group"
@@ -341,7 +352,7 @@ const CreateForm: React.FC = () => {
         <div className="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <button
             onClick={() => setShowColorPicker(!showColorPicker)}
-            className="flex items-center gap-2 px-3 py-1.5 bg-white/90 dark:bg-black/80 backdrop-blur-sm rounded-lg text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-white dark:hover:bg-black shadow-sm transition-all"
+            className="flex items-center gap-2 px-3 py-1.5 bg-white/90 dark:bg-gray-900/85 backdrop-blur-sm rounded-full text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-white dark:hover:bg-gray-800 shadow-sm transition-all"
           >
             <Palette size={14} />
             Change Cover
@@ -364,11 +375,11 @@ const CreateForm: React.FC = () => {
 
       {/* Main Content Card */}
       <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 pb-20">
-        <div className="bg-white dark:bg-black rounded-[2rem] shadow-2xl shadow-indigo-500/10 dark:shadow-none border border-gray-100 dark:border-gray-800 min-h-[60vh] relative overflow-visible">
+        <div className="bg-white dark:bg-gray-900 rounded-[2.25rem] shadow-2xl shadow-indigo-500/10 dark:shadow-black/20 border border-gray-100 dark:border-gray-800 min-h-[60vh] relative overflow-visible">
 
           {/* Form Icon / Badge */}
           <div className="absolute -top-12 left-10 sm:left-14">
-            <div className="bg-white dark:bg-black p-2 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-800">
+            <div className="bg-white dark:bg-gray-900 p-2 rounded-[2rem] shadow-lg border border-gray-100 dark:border-gray-800">
               <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 p-4 rounded-2xl">
                 <File size={40} className="text-indigo-600 dark:text-indigo-400" />
               </div>
@@ -377,6 +388,10 @@ const CreateForm: React.FC = () => {
 
           {/* Form Content */}
           <div className="pt-20 px-8 sm:px-12 pb-12">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 px-3 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400">
+              Workspace
+              <span className="text-gray-900 dark:text-gray-100">{activeWorkspace}</span>
+            </div>
 
             {/* Title Input */}
             <div className="group mb-8">
@@ -387,7 +402,7 @@ const CreateForm: React.FC = () => {
                 ref={titleInputRef}
                 onChange={(e) => setFormTitle(e.target.value)}
                 onKeyDown={handleTitleKeyDown}
-                className="text-4xl sm:text-5xl font-extrabold w-full bg-transparent border-none focus:ring-0 focus:outline-none text-gray-900 dark:text-white placeholder-gray-300 dark:placeholder-gray-700 leading-tight tracking-tight transition-colors"
+                className="text-4xl sm:text-5xl font-extrabold w-full bg-transparent border-none focus:ring-0 focus:outline-none text-gray-900 dark:text-white placeholder-gray-300 dark:placeholder-gray-600 leading-tight tracking-tight transition-colors"
               />
               <div className="h-1 w-20 bg-gray-100 dark:bg-gray-800 mt-4 rounded-full group-hover:w-full group-hover:bg-indigo-500/20 transition-all duration-500"></div>
             </div>
@@ -434,7 +449,7 @@ const CreateForm: React.FC = () => {
                                 onChange={(e) => handleInputChange(e, idx)}
                                 onKeyDown={(e) => handleBlockKeyDown(e, idx)}
                                 placeholder="Type '/' for commands"
-                                className="w-full text-lg py-2 bg-transparent border-none focus:ring-0 focus:outline-none text-gray-700 dark:text-gray-200 placeholder-gray-300 dark:placeholder-gray-600"
+                                className="w-full text-lg py-2 bg-transparent border-none focus:ring-0 focus:outline-none text-gray-700 dark:text-gray-200 placeholder-gray-300 dark:placeholder-gray-500"
                               />
                             </div>
                           )}
@@ -443,7 +458,7 @@ const CreateForm: React.FC = () => {
                           {showSlashCommand &&
                             block.value?.startsWith("/") &&
                             activeBlock?.id === block.id && (
-                              <div className="absolute top-full left-0 z-50 mt-2 w-72 bg-white dark:bg-gray-900 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                              <div className="absolute top-full left-0 z-50 mt-2 w-72 bg-white dark:bg-gray-900 rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                                 <SlashCommand
                                   blockId={block.id}
                                   query={activeQuery}
@@ -471,7 +486,7 @@ const CreateForm: React.FC = () => {
                 }}
                 className="group flex items-center gap-3 text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 mt-6 py-3 cursor-pointer transition-all duration-200"
               >
-                <div className="w-8 h-8 rounded-full border border-gray-200 dark:border-gray-800 flex items-center justify-center bg-white dark:bg-gray-900 group-hover:border-indigo-500/50 group-hover:shadow-md transition-all">
+                <div className="w-8 h-8 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center bg-white dark:bg-gray-800 group-hover:border-indigo-500/50 group-hover:shadow-md transition-all">
                   <Plus size={16} />
                 </div>
                 <span className="text-sm font-medium">Click to add a new question</span>
@@ -483,7 +498,7 @@ const CreateForm: React.FC = () => {
               <button
                 onClick={publishForm}
                 disabled={publishing}
-                className="bg-indigo-600 hover:bg-indigo-700 dark:bg-white dark:hover:bg-gray-200 text-white dark:text-black px-8 py-3 rounded-xl font-bold text-lg shadow-lg hover:shadow-indigo-500/25 dark:hover:shadow-white/10 hover:-translate-y-0.5 transition-all duration-300 active:scale-95 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="bg-indigo-600 hover:bg-indigo-700 dark:bg-white dark:hover:bg-gray-200 text-white dark:text-black px-8 py-3 rounded-2xl font-bold text-lg shadow-lg hover:shadow-indigo-500/25 dark:hover:shadow-white/10 hover:-translate-y-0.5 transition-all duration-300 active:scale-95 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {publishing ? (
                   <>
