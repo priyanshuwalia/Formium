@@ -11,6 +11,7 @@ import {
   HelpCircle,
   MessageCircle,
   User as UserIcon,
+  Building2,
   Menu,
   X,
   Moon,
@@ -27,6 +28,8 @@ const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [workspaces, setWorkspaces] = useState<string[]>(["My Workspace"]);
+  const [activeWorkspace, setActiveWorkspace] = useState("My Workspace");
   const { user: User, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
@@ -35,6 +38,35 @@ const Sidebar = () => {
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
+
+  useEffect(() => {
+    const storedWorkspaces = localStorage.getItem("workspaces");
+    const storedActive = localStorage.getItem("activeWorkspaceName");
+    if (storedWorkspaces) {
+      try {
+        const parsed = JSON.parse(storedWorkspaces);
+        if (Array.isArray(parsed) && parsed.length > 0) setWorkspaces(parsed);
+      } catch {
+        localStorage.removeItem("workspaces");
+      }
+    }
+    if (storedActive) setActiveWorkspace(storedActive);
+  }, []);
+
+  const selectWorkspace = (workspace: string) => {
+    setActiveWorkspace(workspace);
+    localStorage.setItem("activeWorkspaceName", workspace);
+    window.dispatchEvent(new Event("workspace-change"));
+  };
+
+  const createWorkspace = () => {
+    const name = window.prompt("Workspace name", `Workspace ${workspaces.length + 1}`);
+    if (!name?.trim()) return;
+    const updated = [...workspaces, name.trim()];
+    setWorkspaces(updated);
+    localStorage.setItem("workspaces", JSON.stringify(updated));
+    selectWorkspace(name.trim());
+  };
 
   const handleLogout = () => {
     logout();
@@ -133,28 +165,35 @@ const Sidebar = () => {
             />
 
             {}
-            <div
-              className={`${collapsed && !mobileOpen ? "hidden" : "block"} mt-4`}
-            >
-              <div className="text-sm mb-3 text-gray-600 dark:text-gray-400 font-normal px-2">
-                Workspaces
+            <div className={`${collapsed && !mobileOpen ? "hidden" : "block"} mt-4`}>
+              <div className="flex items-center justify-between text-sm mb-3 text-gray-600 dark:text-gray-400 font-normal px-2">
+                <span>Workspaces</span>
+                <button
+                  onClick={createWorkspace}
+                  className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-indigo-500 dark:hover:text-indigo-400"
+                  title="Create workspace"
+                >
+                  <Plus size={16} />
+                </button>
               </div>
-              <div
-                className="flex items-center text-gray-700 dark:text-gray-300 gap-2 px-2 py-1 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md cursor-pointer transition-colors"
-                onMouseEnter={() => setHovered(true)}
-                onMouseLeave={() => setHovered(false)}
-              >
-                <ChevronRight
-                  className="text-gray-500 dark:text-gray-400"
-                  size={18}
-                />
-                <span className="truncate">My Workspace</span>
-                {hovered && (
-                  <Plus
-                    size={18}
-                    className="text-gray-500 dark:text-gray-400 hover:text-indigo-500 dark:hover:text-indigo-400 ml-auto"
-                  />
-                )}
+              <div className="space-y-1" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+                {workspaces.map((workspace) => (
+                  <button
+                    key={workspace}
+                    onClick={() => selectWorkspace(workspace)}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-2xl cursor-pointer transition-colors text-left ${
+                      workspace === activeWorkspace
+                        ? "bg-gray-100 dark:bg-gray-800 text-indigo-600 dark:text-indigo-300"
+                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/70"
+                    }`}
+                  >
+                    <Building2 size={16} className="shrink-0" />
+                    <span className="truncate">{workspace}</span>
+                    {hovered && workspace === activeWorkspace && (
+                      <ChevronRight size={16} className="ml-auto text-gray-400" />
+                    )}
+                  </button>
+                ))}
               </div>
             </div>
           </nav>
@@ -177,16 +216,16 @@ const Sidebar = () => {
               <div className="text-gray-600 dark:text-gray-400 mb-1 px-2 mt-4">
                 Help
               </div>
-              <div className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded cursor-pointer">
+              <div onClick={() => navigate("/get-started")} className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-2xl cursor-pointer">
                 <BookOpen size={16} /> Get started
               </div>
-              <div className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded cursor-pointer">
+              <div onClick={() => navigate("/how-to-guides")} className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-2xl cursor-pointer">
                 <LifeBuoy size={16} /> How-to guides
               </div>
-              <div className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded cursor-pointer">
+              <div onClick={() => navigate("/help-center")} className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-2xl cursor-pointer">
                 <HelpCircle size={16} /> Help center
               </div>
-              <div className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded cursor-pointer">
+              <div className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-2xl cursor-pointer">
                 <MessageCircle size={16} /> Contact support
               </div>
             </div>
@@ -194,7 +233,7 @@ const Sidebar = () => {
 
           {}
           {(!collapsed || mobileOpen) && (
-            <div className="p-4 border-t border-gray-300 dark:border-gray-800 flex items-center gap-3">
+            <div onClick={() => navigate("/profile")} className="p-4 border-t border-gray-300 dark:border-gray-800 flex items-center gap-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors">
               <UserIcon
                 size={24}
                 className="text-indigo-600 dark:text-indigo-400"
@@ -202,7 +241,10 @@ const Sidebar = () => {
               <div className="text-sm overflow-hidden text-gray-900 dark:text-white">
                 <div className="font-medium truncate">{User?.email}</div>
                 <button
-                  onClick={handleLogout}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleLogout();
+                  }}
                   className="text-xs text-gray-500 dark:text-gray-400 hover:underline"
                 >
                   Logout

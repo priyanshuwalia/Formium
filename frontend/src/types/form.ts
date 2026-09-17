@@ -46,5 +46,10 @@ export interface FormBlock {
   required: boolean;
   options?: string[];
   coverColor?: string;
-  logic?: { triggerBlockId: string; triggerValue: string }[] | null;
+  workspaceId?: string;
+  logic?: {
+    triggerBlockId: string;
+    triggerValue: string;
+    jumpToBlockId?: string;
+  }[] | null;
 }
