@@ -6,7 +6,7 @@ export const createFormBlockHandler = async (req, res) => {
     }
     catch (err) {
         console.error("Error creating FormBlock:", err);
-        res.status(500).json({ error: "failed to create FormBlock", details: err.message || err });
+        res.status(500).json({ error: "Something went wrong. Please try again." });
     }
 };
 export const getBlocksByFormIdHandler = async (req, res) => {
@@ -20,7 +20,8 @@ export const getBlocksByFormIdHandler = async (req, res) => {
         res.json(blocks);
     }
     catch (err) {
-        res.status(500).json({ error: "failed to fetch form Blocks", err });
+        console.error("Error fetching form blocks:", err);
+        res.status(500).json({ error: "Failed to fetch form blocks" });
     }
 };
 export const updateBlockHandler = async (req, res) => {
@@ -36,7 +37,8 @@ export const updateBlockHandler = async (req, res) => {
         res.json({ message: "Block updated successfully" });
     }
     catch (err) {
-        res.status(500).json({ error: "Failed to Update Block", details: err });
+        console.error("Error updating block:", err);
+        res.status(500).json({ error: "Failed to update block" });
     }
 };
 export const deleteBlockHandler = async (req, res) => {
@@ -51,6 +53,7 @@ export const deleteBlockHandler = async (req, res) => {
         res.json({ message: "Block deleted successfully" });
     }
     catch (err) {
-        res.status(500).json({ error: "Failed to delete block", details: err });
+        console.error("Error deleting block:", err);
+        res.status(500).json({ error: "Failed to delete block" });
     }
 };

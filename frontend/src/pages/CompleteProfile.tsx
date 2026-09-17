@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { User, Loader2, ArrowRight } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { updateUserProfile } from "../api/user";
+import { getErrorMessage } from "../utils/apiError";
 import { useNavigate } from "react-router-dom";
 
 const CompleteProfile: React.FC = () => {
@@ -28,9 +29,9 @@ const CompleteProfile: React.FC = () => {
       const updated = await updateUserProfile({ name, bio });
       updateUser(updated);
       navigate("/home"); // Redirect to home/dashboard after completion
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setError(err.response?.data?.error || "Failed to update profile.");
+      setError(getErrorMessage(err, "Failed to update profile."));
     } finally {
       setLoading(false);
     }

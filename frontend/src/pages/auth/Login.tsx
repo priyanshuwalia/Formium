@@ -3,6 +3,7 @@ import { loginUser, loginWithGoogle } from "../../api/auth";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import Input from "../../components/Input";
+import { getErrorMessage } from "../../utils/apiError";
 import clumsyMan from "../../assets/open-doodles-clumsy-man-dropping-documents-and-files.svg";
 import GoogleAuthButton from "../../components/GoogleAuthButton";
 
@@ -22,8 +23,8 @@ const Login = () => {
       const res = await loginUser(email, password);
       login(res.data.token, res.data.user);
       navigate("/home");
-    } catch (err: any) {
-      setError(err.response?.data?.error || "Login failed");
+    } catch (err) {
+      setError(getErrorMessage(err, "Incorrect email or password."));
     } finally {
       setLoading(false);
     }

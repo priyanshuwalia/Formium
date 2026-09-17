@@ -5,6 +5,7 @@ import { v4 as uuid } from "uuid";
 import { Plus, File, Palette, ArrowRight, Trash } from "lucide-react";
 import BlockRenderer from "../components/formBuilder/BlockRenderer";
 import API from "../api/axios";
+import { getErrorMessage } from "../utils/apiError";
 import { useAuth } from "../context/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -117,9 +118,9 @@ const CreateForm: React.FC = () => {
         console.log("No slug found");
         alert("Form created, but could not get the shareable link.");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.log("Error publishing form:", error);
-      alert(`Failed to publish form: ${error.response?.data?.details || error.message || "Unknown error"}`);
+      alert(getErrorMessage(error, "Failed to publish form. Please try again."));
     } finally {
       setPublishing(false);
     }
