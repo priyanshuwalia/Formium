@@ -1,30 +1,33 @@
 import * as ResponseService from "./response.service.js";
-export const createResponseHandler = async (req, res) => {
-    if (!req.body) {
-        res.status(400).json({ error: "Request body is empty" });
+import { ResponseError } from "./response.service.js";
+import { ApiError, asyncHandler } from "../../utils/errors.js";
+import prisma from "../../config/db.js";
+const handleError = (res, err, context) => {
+    if (err instanceof ResponseError) {
+        res.status(err.status).json({ error: err.message });
         return;
     }
-    const { formId, items } = req.body;
+    console.error(`${context} error:`, err);
+    res.status(500).json({ error: "Something went wrong. Please try again." });
+};
+export const createResponseHandler = async (req, res) => {
     try {
-        if (!formId || !items || !Array.isArray(items)) {
-            res.status(400).json({ error: "formId and Items[] required" });
-            return;
-        }
+        const { formId, items } = req.body;
         const response = await ResponseService.createResponse(formId, items);
         res.status(201).json(response);
     }
     catch (err) {
-        res.status(500).json({ error: "Couldnt submit Response", err });
+        handleError(res, err, "Create response");
     }
 };
 export const getResponsesHandler = async (req, res) => {
     try {
         const { formId } = req.params;
         const responses = await ResponseService.getResponseByForm(formId);
-        res.status(201).json(responses);
+        res.json(responses);
     }
     catch (err) {
-        res.status(500).json({ error: "Failed to fetch responses" });
+        handleError(res, err, "Fetch responses");
     }
 };
 export const getResponseHandler = async (req, res) => {
@@ -38,6 +41,23 @@ export const getResponseHandler = async (req, res) => {
         res.json(response);
     }
     catch (err) {
-        res.status(500).json({ error: "Failed to fetch response details" });
+        handleError(res, err, "Fetch response");
     }
 };
+export const exportResponsesHandler = asyncHandler(async (req, res) => {
+    const formId = typeof req.query.formId === "string" ? req.query.formId : undefined;
+    if (!formId)
+        throw new ApiError("Missing formId query param", 400);
+    const form = await prisma.form.findUnique({
+        where: { id: formId },
+        select: { userId: true },
+    });
+    if (!form)
+        throw new ApiError("Form not found", 404);
+    if (form.userId !== req.user.id)
+        throw new ApiError("Form not found", 404);
+    const { csv, filename } = await ResponseService.buildResponsesCsv(formId);
+    res.setHeader("Content-Type", "text/csv; charset=utf-8");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(csv);
+});

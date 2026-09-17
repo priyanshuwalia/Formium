@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { TrendingUp, Users, Clock, Globe, ArrowUp, ArrowDown, FileText } from "lucide-react";
+import { TrendingUp, Users, Clock, Globe, ArrowUp, ArrowDown, FileText, type LucideIcon } from "lucide-react";
 import { getAnalyticsFn } from "../api/analytics";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
+type Stat = { label: string; value: string; change: string; trend: string; icon: string };
+type TopForm = { id: string; name: string; responses: number };
+type AnalyticsData = { stats: Stat[]; trends: number[]; topForms: TopForm[] };
+
 const Analytics: React.FC = () => {
-    const [data, setData] = useState<any>(null);
+    const [data, setData] = useState<AnalyticsData | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -21,7 +25,7 @@ const Analytics: React.FC = () => {
         fetchData();
     }, []);
 
-    const iconMap: any = {
+    const iconMap: Record<string, LucideIcon> = {
         Users: Users,
         Globe: Globe,
         Clock: Clock,
@@ -60,7 +64,7 @@ const Analytics: React.FC = () => {
 
             { }
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
-                {data.stats.map((stat: any, idx: number) => {
+                {data.stats.map((stat, idx) => {
                     const Icon = iconMap[stat.icon] || Users;
                     return (
                         <div key={idx} className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition">
@@ -131,7 +135,7 @@ const Analytics: React.FC = () => {
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Top Performing Forms</h3>
                     <div className="space-y-6">
                         {data.topForms.length > 0 ? (
-                            data.topForms.map((form: any, idx: number) => (
+                            data.topForms.map((form, idx) => (
                                 <div key={idx} className="flex items-center justify-between pb-4 border-b border-gray-50 dark:border-gray-800 last:border-0 last:pb-0">
                                     <div className="flex-1 min-w-0 mr-4"> { }
                                         <div className="font-semibold text-gray-800 dark:text-gray-200 mb-1 truncate">{form.name}</div>

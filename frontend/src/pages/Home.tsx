@@ -154,7 +154,7 @@ export default function Home() {
                   Go to Dashboard
                 </Link>
                 <button
-                  onClick={logout}
+                  onClick={() => logout()}
                   className="p-2 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                   title="Logout"
                 >

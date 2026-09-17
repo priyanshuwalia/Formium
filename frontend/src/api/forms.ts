@@ -23,6 +23,24 @@ export const getFormResponses = async (formId: string) => {
   }
 };
 
+export const exportFormResponses = async (
+  formId: string,
+  filename = "responses.csv",
+) => {
+  const response = await API.get(`/response/export`, {
+    params: { formId },
+    responseType: "blob",
+  });
+  const url = URL.createObjectURL(new Blob([response.data]));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+};
+
 export const deleteForm = async (formId: string) => {
   try {
     const response = await API.delete(`/forms/${formId}`);

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { CheckCircle, Copy, ArrowRight, Home } from 'lucide-react';
+import { CheckCircle, Copy, ArrowRight, Home, Code2 } from 'lucide-react';
 
 const PublishSuccessPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -53,6 +53,13 @@ const PublishSuccessPage: React.FC = () => {
             className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 font-semibold text-white bg-gray-800 rounded-lg hover:bg-gray-900 transition-colors"
           >
             View Form <ArrowRight size={18} />
+          </Link>
+          <Link
+            to={`/forms/${slug}/embed`}
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 font-semibold text-[#0668bd] bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+          >
+            <Code2 size={18} />
+            Embed
           </Link>
           <button
             onClick={() => navigate('/dashboard')} 

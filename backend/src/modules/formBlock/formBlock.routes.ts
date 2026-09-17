@@ -1,13 +1,14 @@
 import { Router } from "express";
 import { createFormBlockHandler, deleteBlockHandler, getBlocksByFormIdHandler, updateBlockHandler } from "./formBlock.controller.js";
 import { verifyToken } from "../../middleware/verifyToken.js";
+import { validate, createFormBlockSchema, updateFormBlockSchema } from "../../utils/validation.js";
 
 
-const router= Router();
+const router = Router();
 
-router.post("/", verifyToken, createFormBlockHandler);
+router.post("/", verifyToken, validate(createFormBlockSchema), createFormBlockHandler);
 router.get("/:formId", getBlocksByFormIdHandler);
-router.put("/:id", verifyToken, updateBlockHandler);
+router.put("/:id", verifyToken, validate(updateFormBlockSchema), updateBlockHandler);
 router.delete("/:id", verifyToken, deleteBlockHandler);
 
 export default router;

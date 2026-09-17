@@ -3,14 +3,14 @@ import { Plus, Clock, FileText, ArrowRight, Star, Moon, Sun } from "lucide-react
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getUserForms } from "../api/forms";
-import { type FormBlock } from "../types/form";
+import { type Form, type FormBlock } from "../types/form";
 import { v4 as uuid } from "uuid";
 import { useTheme } from "../context/ThemeContext";
 
 const UserHome: React.FC = () => {
     const { user } = useAuth();
     const { theme, toggleTheme } = useTheme();
-    const [recentForms, setRecentForms] = useState<any[]>([]);
+    const [recentForms, setRecentForms] = useState<Form[]>([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 

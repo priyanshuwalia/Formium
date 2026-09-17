@@ -33,6 +33,7 @@ export type BlockType =
   theme?: string;
   successText?: string;
   coverColor?: string;
+  _count?: { responses: number };
 }
 
 export interface FormBlock {
@@ -45,6 +46,5 @@ export interface FormBlock {
   required: boolean;
   options?: string[];
   coverColor?: string;
-  
-  
+  logic?: { triggerBlockId: string; triggerValue: string }[] | null;
 }

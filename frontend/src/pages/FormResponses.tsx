@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getFormResponses } from '../api/forms';
+import { getFormResponses, exportFormResponses } from '../api/forms';
 import API from '../api/axios';
-import { ChevronLeft, Calendar } from 'lucide-react';
+import { ChevronLeft, Calendar, Download } from 'lucide-react';
+import AIInsights from '../components/AIInsights';
+
+type ResponseItem = { id: string; value: string };
+type FormResponse = { id: string; createdAt: string; items: ResponseItem[] };
 
 const FormResponses: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
-    const [responses, setResponses] = useState<any[]>([]);
+    const [responses, setResponses] = useState<FormResponse[]>([]);
+    const [formId, setFormId] = useState("");
     const [formTitle, setFormTitle] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [exporting, setExporting] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -17,6 +23,7 @@ const FormResponses: React.FC = () => {
 
                 const formRes = await API.get(`/forms/${slug}`);
                 const form = formRes.data;
+                setFormId(form.id);
                 setFormTitle(form.title);
 
                 const res = await getFormResponses(form.id);
@@ -30,6 +37,20 @@ const FormResponses: React.FC = () => {
         };
         fetchData();
     }, [slug]);
+
+    const handleExport = async () => {
+        if (!formId) return;
+        setExporting(true);
+        try {
+            const safeTitle = formTitle.replace(/[^\w\s-]/g, "").replace(/\s+/g, "-");
+            await exportFormResponses(formId, `${safeTitle || "form"}-responses.csv`);
+        } catch (err) {
+            console.error("Export failed:", err);
+            setError("Failed to export responses");
+        } finally {
+            setExporting(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -48,7 +69,19 @@ const FormResponses: React.FC = () => {
                     </Link>
                     <h1 className="text-2xl lg:text-3xl font-extrabold text-gray-900 dark:text-white">{formTitle} <span className="text-gray-400 dark:text-gray-500 font-medium text-xl">Responses</span></h1>
                 </div>
+                {responses.length > 0 && (
+                    <button
+                        onClick={handleExport}
+                        disabled={exporting}
+                        className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-60"
+                    >
+                        <Download size={16} />
+                        {exporting ? "Exporting..." : "Export CSV"}
+                    </button>
+                )}
             </header>
+
+            {responses.length > 0 && formId && <AIInsights formId={formId} />}
 
             {error ? (
                 <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-lg">{error}</div>
@@ -78,7 +111,7 @@ const FormResponses: React.FC = () => {
                                         </td>
                                         <td className="p-4">
                                             <div className="flex flex-wrap gap-2">
-                                                {r.items.slice(0, 3).map((item: any) => (
+                                                {r.items.slice(0, 3).map((item) => (
                                                     <span key={item.id} className="bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 px-2 py-1 rounded text-xs border border-indigo-100 dark:border-indigo-900/30">
                                                         {truncate(item.value, 30)}
                                                     </span>

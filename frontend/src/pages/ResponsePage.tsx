@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import API from "../api/axios";
 import { type FormBlock } from "../types/form";
 import MadeWithFormium from "../components/MadeWithFormBuddy";
+import { uploadFile } from "../api/upload";
 
 interface FullForm {
   id: string;
@@ -17,6 +18,8 @@ type ResponsesState = Record<string, string | string[] | number | null>;
 
 const ResponsePage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const [searchParams] = useSearchParams();
+  const isEmbed = searchParams.get("embed") === "1";
 
   const [form, setForm] = useState<FullForm | null>(null);
   const [responses, setResponses] = useState<ResponsesState>({});
@@ -24,6 +27,7 @@ const ResponsePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [uploadingBlockId, setUploadingBlockId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!slug) {
@@ -62,6 +66,39 @@ const ResponsePage: React.FC = () => {
     }));
   };
 
+  const shouldShowBlock = (
+    block: FormBlock,
+    currentResponses: ResponsesState,
+  ): boolean => {
+    if (!block.logic || block.logic.length === 0) return true;
+    return block.logic.some((rule) => {
+      const answer = String(currentResponses[rule.triggerBlockId] || "");
+      return answer.toLowerCase() === rule.triggerValue.toLowerCase();
+    });
+  };
+
+  const handleFileChange = async (
+    blockId: string,
+    file: File | undefined,
+  ) => {
+    if (!file) {
+      handleInputChange(blockId, "");
+      return;
+    }
+
+    setUploadingBlockId(blockId);
+    setError(null);
+    try {
+      const key = await uploadFile(form!.id, file);
+      handleInputChange(blockId, key);
+    } catch (err) {
+      console.error("Upload failed:", err);
+      setError("Failed to upload file. Please try again.");
+    } finally {
+      setUploadingBlockId(null);
+    }
+  };
+
   const handleCheckboxChange = (
     blockId: string,
     option: string,
@@ -78,18 +115,24 @@ const ResponsePage: React.FC = () => {
     e.preventDefault();
     setSubmitting(true);
 
+    const visibleBlocks = (form?.blocks || []).filter((block) =>
+      shouldShowBlock(block, responses),
+    );
+
     const payload = {
       formId: form?.id,
-      items: Object.entries(responses).map(([blockId, value]) => ({
-        blockId,
-        value: Array.isArray(value) ? value.join(", ") : String(value || ""),
+      items: visibleBlocks.map((block) => ({
+        blockId: block.id,
+        value: Array.isArray(responses[block.id])
+          ? (responses[block.id] as string[]).join(", ")
+          : String(responses[block.id] || ""),
       })),
     };
 
     try {
       await API.post("/response", payload);
       setSubmitted(true);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Failed to submit responses:", err);
       setError("There was an error submitting your form. Please try again.");
     } finally {
@@ -166,7 +209,9 @@ const ResponsePage: React.FC = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="p-8 sm:p-12 space-y-8">
-            {form.blocks.map((block) => {
+            {form.blocks
+              .filter((block) => shouldShowBlock(block, responses))
+              .map((block) => {
               const { id, type, label, placeholder, required, options } = block;
               const inputId = `block-${id}`;
 
@@ -196,7 +241,7 @@ const ResponsePage: React.FC = () => {
                 case "NUM":
                 case "PHONE_NUM":
                 case "LINK":
-                case "DATE":
+                case "DATE": {
                   const inputType = {
                     SHORT_ANS: "text",
                     EMAIL: "email",
@@ -216,6 +261,7 @@ const ResponsePage: React.FC = () => {
                       className={inputClasses}
                     />,
                   );
+                }
 
                 case "LONG_ANS":
                   return fieldWrapper(
@@ -376,13 +422,11 @@ const ResponsePage: React.FC = () => {
                         id={inputId}
                         type="file"
                         onChange={(e) =>
-                          handleInputChange(
-                            id,
-                            e.target.files ? e.target.files[0].name : "",
-                          )
+                          handleFileChange(id, e.target.files?.[0])
                         }
-                        required={required}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        required={required && !responses[id]}
+                        disabled={uploadingBlockId === id}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-wait"
                       />
                       <div className="pointer-events-none">
                         <svg
@@ -400,9 +444,13 @@ const ResponsePage: React.FC = () => {
                           />
                         </svg>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {(responses[id] as string) ? (
+                          {uploadingBlockId === id ? (
                             <span className="text-indigo-600 font-medium">
-                              Selected: {responses[id] as string}
+                              Uploading...
+                            </span>
+                          ) : responses[id] ? (
+                            <span className="text-indigo-600 font-medium">
+                              Uploaded
                             </span>
                           ) : (
                             <span>Click to upload or drag and drop</span>
@@ -455,9 +503,11 @@ const ResponsePage: React.FC = () => {
           </form>
         </div>
 
-        <div className="mt-8 mb-12">
-          <MadeWithFormium />
-        </div>
+        {!isEmbed && (
+          <div className="mt-8 mb-12">
+            <MadeWithFormium />
+          </div>
+        )}
       </div>
     </div>
   );

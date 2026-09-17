@@ -1,18 +1,36 @@
-import jwt from "jsonwebtoken";
-const JWT_SECRET = process.env.JWT_SECRET;
+import { ACCESS_COOKIE, REFRESH_COOKIE, cookieOptions, } from "../utils/cookies.js";
+import { signAccessToken, verifyAccessToken, verifyRefreshToken, } from "../utils/tokens.js";
+/**
+ * Accepts an access token from either the `Authorization: Bearer` header
+ * (Safari/ITP-safe fallback) or the httpOnly cookie, transparently rotating
+ * the access cookie from the refresh cookie when it has expired.
+ */
 export const verifyToken = (req, res, next) => {
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        res.status(401).json({ error: "Unauthorized: No token Provided" });
-        return;
+    const bearer = authHeader?.startsWith("Bearer ")
+        ? authHeader.slice("Bearer ".length)
+        : undefined;
+    const access = bearer || req.cookies?.[ACCESS_COOKIE];
+    if (access) {
+        const payload = verifyAccessToken(access);
+        if (payload) {
+            req.user = { id: payload.id };
+            next();
+            return;
+        }
     }
-    const token = authHeader.split(" ")[1];
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        req.user = decoded;
-        next();
+    const refresh = req.cookies?.[REFRESH_COOKIE];
+    if (refresh) {
+        const payload = verifyRefreshToken(refresh);
+        if (payload) {
+            res.cookie(ACCESS_COOKIE, signAccessToken(payload.id), {
+                ...cookieOptions(),
+                maxAge: 15 * 60 * 1000,
+            });
+            req.user = { id: payload.id };
+            next();
+            return;
+        }
     }
-    catch (err) {
-        res.status(401).json({ error: "Unauthorized: Invalid Token" });
-    }
+    res.status(401).json({ error: "Unauthorized" });
 };

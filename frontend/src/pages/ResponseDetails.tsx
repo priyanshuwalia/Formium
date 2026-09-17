@@ -3,9 +3,17 @@ import { useParams, Link } from "react-router-dom";
 import { ChevronLeft, Calendar } from "lucide-react";
 import { getFormResponseDetails } from "../api/forms";
 
+type ResponseItem = { blockId: string; value: string };
+type ResponseBlock = { id: string; type: string; label: string };
+type ResponseDetailsData = {
+    form: { slug: string; blocks: ResponseBlock[] };
+    items: ResponseItem[];
+    createdAt: string;
+};
+
 const ResponseDetails: React.FC = () => {
     const { responseId } = useParams<{ responseId: string }>();
-    const [data, setData] = useState<any>(null);
+    const [data, setData] = useState<ResponseDetailsData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -41,7 +49,7 @@ const ResponseDetails: React.FC = () => {
     const blocks = form.blocks;
 
     const getAnswer = (blockId: string) => {
-        const item = items.find((i: any) => i.blockId === blockId);
+        const item = items.find((i) => i.blockId === blockId);
         return item ? item.value : "No answer";
     };
 
@@ -66,7 +74,7 @@ const ResponseDetails: React.FC = () => {
             </header>
 
             <div className="max-w-3xl mx-auto space-y-6">
-                {blocks.map((block: any) => {
+                {blocks.map((block) => {
                     if (['H3', 'DIVIDER'].includes(block.type)) {
                         // Render separators or headers if needed, or skip purely visual elements if admin view is strictly Q&A.
                         // Let's render headers for context.

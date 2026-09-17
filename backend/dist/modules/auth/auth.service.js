@@ -1,8 +1,9 @@
 import prisma from "../../config/db.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { randomUUID } from "crypto";
-const JWT_SECRET = process.env.JWT_SECRET;
+import { signAccessToken, signRefreshToken, signPasswordResetToken, verifyTokenOfType, passwordFingerprint, } from "../../utils/tokens.js";
+import { sendPasswordResetEmail } from "../../lib/email.js";
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 /**
  * Expected, safe-to-surface auth failures. Anything that is not an AuthError
  * (database/Prisma errors, etc.) must be treated as an internal error by the
@@ -15,9 +16,9 @@ export class AuthError extends Error {
         this.status = status;
     }
 }
-const signToken = (userId) => jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: "3h" });
 const toAuthResponse = (user) => ({
-    token: signToken(user.id),
+    token: signAccessToken(user.id),
+    refreshToken: signRefreshToken(user.id),
     user: {
         id: user.id,
         email: user.email,
@@ -26,7 +27,6 @@ const toAuthResponse = (user) => ({
         profilePicture: user.profilePicture ?? undefined,
     },
 });
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const validateCredentials = (email, password) => {
     if (typeof email !== "string" || typeof password !== "string" || !email || !password) {
         throw new AuthError("Please enter your email and password.", 400);
@@ -83,5 +83,50 @@ export const googleLogin = async (accessToken) => {
             profilePicture: userInfo?.picture,
         },
     });
+    return toAuthResponse(user);
+};
+export const refreshSession = async (refreshToken) => {
+    if (!refreshToken)
+        throw new AuthError("Unauthorized", 401);
+    const payload = verifyTokenOfType(refreshToken, "refresh");
+    if (!payload)
+        throw new AuthError("Unauthorized", 401);
+    const user = await prisma.user.findUnique({ where: { id: payload.id } });
+    if (!user)
+        throw new AuthError("Unauthorized", 401);
+    return {
+        token: signAccessToken(user.id),
+        user: {
+            id: user.id,
+            email: user.email,
+            name: user.name ?? undefined,
+            bio: user.bio ?? undefined,
+            profilePicture: user.profilePicture ?? undefined,
+        },
+    };
+};
+export const requestPasswordReset = async (email) => {
+    const user = await prisma.user.findUnique({ where: { email } });
+    // Always report success to avoid leaking which emails are registered
+    if (!user)
+        return;
+    const token = signPasswordResetToken(user.id, user.password);
+    try {
+        await sendPasswordResetEmail(user.email, token);
+    }
+    catch (err) {
+        console.error("Failed to send password reset email:", err);
+    }
+};
+export const resetPassword = async (token, password) => {
+    const payload = verifyTokenOfType(token, "password-reset");
+    if (!payload?.fp)
+        throw new AuthError("This reset link is invalid or has expired", 400);
+    const user = await prisma.user.findUnique({ where: { id: payload.id } });
+    if (!user || passwordFingerprint(user.password) !== payload.fp) {
+        throw new AuthError("This reset link is invalid or has expired", 400);
+    }
+    const hashed = await bcrypt.hash(password, 10);
+    await prisma.user.update({ where: { id: user.id }, data: { password: hashed } });
     return toAuthResponse(user);
 };

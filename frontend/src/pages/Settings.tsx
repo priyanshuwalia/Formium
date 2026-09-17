@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { User, Shield, Save, Loader2, Trash2 } from "lucide-react";
+import { User, Shield, Save, Loader2, Trash2, CreditCard } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { updateUserProfile, deleteUserAccount } from "../api/user";
 import { useNavigate } from "react-router-dom";
+import {
+  getBillingStatus,
+  openBillingPortal,
+  startCheckout,
+  type BillingStatus,
+} from "../api/billing";
 
 const Settings: React.FC = () => {
   const { user, updateUser, logout } = useAuth();
@@ -14,6 +20,8 @@ const Settings: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [billing, setBilling] = useState<BillingStatus | null>(null);
+  const [billingLoading, setBillingLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -22,6 +30,41 @@ const Settings: React.FC = () => {
       setBio(user.bio || "");
     }
   }, [user]);
+
+  useEffect(() => {
+    getBillingStatus()
+      .then(setBilling)
+      .catch(() => undefined);
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("upgrade") === "success") {
+      setSuccessMsg("Upgrade successful! Your plan is now Pro.");
+    } else if (params.get("upgrade") === "cancelled") {
+      setSuccessMsg("Upgrade cancelled.");
+    }
+  }, []);
+
+  const handleUpgrade = async () => {
+    setBillingLoading(true);
+    try {
+      const url = await startCheckout();
+      window.location.href = url;
+    } catch {
+      alert("Failed to start checkout.");
+      setBillingLoading(false);
+    }
+  };
+
+  const handleManageBilling = async () => {
+    setBillingLoading(true);
+    try {
+      const url = await openBillingPortal();
+      window.location.href = url;
+    } catch {
+      alert("Failed to open billing portal.");
+      setBillingLoading(false);
+    }
+  };
 
   const handleSave = async () => {
     setLoading(true);
@@ -163,6 +206,48 @@ const Settings: React.FC = () => {
               Save Changes
             </button>
           </div>
+        </section>
+
+        <section className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-8 mb-8">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+            <CreditCard size={20} />
+            Billing & Plan
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+            {billing
+              ? billing.plan === "PRO"
+                ? billing.planStatus === "active"
+                  ? billing.planRenewsAt
+                    ? `Pro plan · Renews on ${new Date(billing.planRenewsAt).toLocaleDateString()}`
+                    : "Pro plan · Active"
+                  : `Pro plan · Status: ${billing.planStatus}`
+                : `Free plan · ${billing.usage.forms}/${billing.limits.forms} forms · ${
+                    billing.limits.fileUploads
+                      ? "File uploads enabled"
+                      : "No file uploads (Pro only)"
+                  }`
+              : "Loading plan information..."}
+          </p>
+
+          {billing?.plan === "PRO" ? (
+            <button
+              onClick={handleManageBilling}
+              disabled={billingLoading}
+              className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-6 py-2.5 rounded-lg font-semibold transition hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-70"
+            >
+              {billingLoading ? <Loader2 className="animate-spin" size={18} /> : null}
+              Manage billing
+            </button>
+          ) : (
+            <button
+              onClick={handleUpgrade}
+              disabled={billingLoading}
+              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold transition shadow-lg shadow-indigo-500/30 disabled:opacity-70"
+            >
+              {billingLoading ? <Loader2 className="animate-spin" size={18} /> : null}
+              Upgrade to Pro
+            </button>
+          )}
         </section>
 
         <section className="mt-8 border-t border-gray-200 dark:border-gray-800 pt-8">
