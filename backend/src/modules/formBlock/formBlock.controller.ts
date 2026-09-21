@@ -1,14 +1,19 @@
 
 import * as FormBlockService from "./formBlock.service.js";
+import { FormBlockError } from "./formBlock.service.js";
 import { Request, Response } from "express";
 
 export const createFormBlockHandler = async (req: Request, res: Response) => {
     try {
 
-        const block = await FormBlockService.createFormBlock(req.body);
+        const block = await FormBlockService.createFormBlock(req.user.id, req.body);
         res.status(201).json(block);
     }
     catch (err: any) {
+        if (err instanceof FormBlockError) {
+            res.status(err.status).json({ error: err.message });
+            return;
+        }
         console.error("Error creating FormBlock:", err);
         res.status(500).json({ error: "Something went wrong. Please try again." })
     }

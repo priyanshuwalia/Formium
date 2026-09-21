@@ -95,12 +95,17 @@ export const createResponse = async (
     return response;
 };
 
-export const getResponseByForm = async (formId: string) => {
-    return await prisma.response.findMany({ where: { formId }, include: { items: true } })
+export const getResponseByForm = async (formId: string, userId: string) => {
+    const form = await prisma.form.findFirst({
+        where: { id: formId, userId },
+        select: { id: true },
+    });
+    if (!form) throw new ResponseError("Form not found", 404);
+    return prisma.response.findMany({ where: { formId }, include: { items: true } })
 }
 
-export const getResponseById = async (id: string) => {
-    return await prisma.response.findUnique({
+export const getResponseById = async (id: string, userId: string) => {
+    const response = await prisma.response.findUnique({
         where: { id },
         include: {
             items: true,
@@ -113,6 +118,10 @@ export const getResponseById = async (id: string) => {
             }
         }
     });
+    if (!response || response.form.userId !== userId) {
+        throw new ResponseError("Response not found", 404);
+    }
+    return response;
 }
 
 const escapeCsv = (value: string): string => {

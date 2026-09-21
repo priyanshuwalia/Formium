@@ -21,7 +21,7 @@ const Login = () => {
     setError("");
     try {
       const res = await loginUser(email, password);
-      login(res.data.token, res.data.user);
+      login(res.data.user);
       navigate("/home");
     } catch (err) {
       setError(getErrorMessage(err, "Incorrect email or password."));
@@ -33,7 +33,7 @@ const Login = () => {
   const handleGoogleSuccess = async (accessToken: string) => {
     setError("");
     const res = await loginWithGoogle(accessToken);
-    login(res.data.token, res.data.user);
+    login(res.data.user);
     navigate("/home");
   };
 

@@ -32,7 +32,7 @@ const Register: React.FC = () => {
 
     try {
       const res = await registerUser(email, password);
-      login(res.data.token, res.data.user);
+      login(res.data.user);
       navigate("/complete-profile");
     } catch (err) {
       setError(getErrorMessage(err, "Registration failed. Please try again."));
@@ -44,7 +44,7 @@ const Register: React.FC = () => {
   const handleGoogleSuccess = async (accessToken: string) => {
     setError("");
     const res = await loginWithGoogle(accessToken);
-    login(res.data.token, res.data.user);
+    login(res.data.user);
     navigate("/home");
   };
 

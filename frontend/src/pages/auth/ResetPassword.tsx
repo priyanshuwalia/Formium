@@ -43,8 +43,8 @@ const ResetPassword = () => {
     setLoading(true);
     try {
       const res = await resetPassword(token!, password);
-      if (res.data?.token && res.data?.user) {
-        login(res.data.token, res.data.user);
+      if (res.data?.user) {
+        login(res.data.user);
       }
       navigate("/home", { replace: true });
     } catch (err) {

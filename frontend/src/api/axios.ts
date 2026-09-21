@@ -42,31 +42,21 @@ const AUTH_PATHS = [
   "/auth/logout",
   "/auth/forgot-password",
   "/auth/reset-password",
+  "/auth/verify-email",
+  "/auth/resend-verification",
 ];
 
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+// Auth is httpOnly-cookie based: no Authorization header is attached, and the
+// server transparently rotates the access cookie from the refresh cookie.
+API.interceptors.request.use((config) => config);
 
-  return config;
-});
+let refreshPromise: Promise<boolean> | null = null;
 
-let refreshPromise: Promise<string | null> | null = null;
-
-const refreshAccessToken = (): Promise<string | null> => {
+const refreshAccessToken = (): Promise<boolean> => {
   if (!refreshPromise) {
     refreshPromise = API.post("/auth/refresh")
-      .then((res) => {
-        const token = res.data?.token ?? null;
-        if (token) localStorage.setItem("token", token);
-        if (res.data?.user) {
-          localStorage.setItem("user", JSON.stringify(res.data.user));
-        }
-        return token;
-      })
-      .catch(() => null)
+      .then(() => true)
+      .catch(() => false)
       .finally(() => {
         refreshPromise = null;
       });
@@ -86,10 +76,8 @@ API.interceptors.response.use(
 
     if (status === 401 && original && !original._retry && !isAuthPath) {
       original._retry = true;
-      const token = await refreshAccessToken();
-      if (token) {
-        original.headers = original.headers ?? {};
-        original.headers.Authorization = `Bearer ${token}`;
+      const ok = await refreshAccessToken();
+      if (ok) {
         return API(original);
       }
     }

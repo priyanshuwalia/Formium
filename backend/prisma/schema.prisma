@@ -29,6 +29,11 @@ model User {
   plan             Plan      @default(FREE)
   planStatus       String    @default("inactive")
   planRenewsAt     DateTime?
+
+  // Trust & security
+  emailVerified Boolean   @default(false)
+  sessions      Session[]
+  aiUsage       AiUsage[]
 }
 
 model Form {
@@ -44,6 +49,7 @@ model Form {
   isPublished Boolean     @default(false)
   theme       String?
   successText String?
+  aiUsage     AiUsage[]
 }
 
 model Response {
@@ -85,7 +91,6 @@ enum BlockType {
   MULT_CHOICE
   CHECKBOXES
   DROPDOWN
-  MULTI_SELE
   NUM
   EMAIL
   PHONE_NUM
@@ -100,4 +105,35 @@ enum BlockType {
 enum Plan {
   FREE
   PRO
+}
+
+/** Rotating refresh-token sessions. `id` is the refresh token's random jti. */
+model Session {
+  id        String    @id
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  createdAt DateTime  @default(now())
+  expiresAt DateTime
+  revokedAt DateTime?
+
+  @@index([userId])
+}
+
+/** One row per AI analysis — powers the free-tier monthly quota. */
+model AiUsage {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  form      Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  formId    String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+/** Fixed-window rate-limit counters, shared across serverless instances. */
+model RateLimiterFlexible {
+  key    String    @id
+  points Int
+  expire DateTime?
 }

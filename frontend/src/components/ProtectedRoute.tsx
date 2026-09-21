@@ -2,7 +2,7 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const ProtectedRoute = () => {
-  const { token, user, initializing } = useAuth();
+  const { user, initializing } = useAuth();
   const location = useLocation();
 
   if (initializing) {
@@ -13,7 +13,7 @@ const ProtectedRoute = () => {
     );
   }
 
-  if (!token || !user) {
+  if (!user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
 

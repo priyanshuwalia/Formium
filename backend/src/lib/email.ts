@@ -24,6 +24,17 @@ export async function sendPasswordResetEmail(to: string, token: string) {
   });
 }
 
+export async function sendVerificationEmail(to: string, token: string) {
+  if (!isConfigured()) return;
+  const link = `${appUrl()}/verify-email?token=${token}`;
+  await getResend().emails.send({
+    from: process.env.EMAIL_FROM || "Formium <no-reply@formium.app>",
+    to,
+    subject: "Confirm your Formium email",
+    html: `<h1>Confirm your email</h1><p>Finish signing up by confirming your email address:</p><p><a href="${link}">${link}</a></p>`,
+  });
+}
+
 export async function sendNewResponseNotification(
   to: string,
   formTitle: string,

@@ -5,6 +5,10 @@ const mocks = vi.hoisted(() => ({
     user: {
       findUnique: vi.fn(),
       create: vi.fn(),
+      update: vi.fn(),
+    },
+    session: {
+      create: vi.fn(),
     },
   },
 }));
@@ -39,6 +43,8 @@ describe("googleLogin", () => {
         ),
     );
     mocks.prisma.user.findUnique.mockResolvedValue({ id: "u1", email: "g@test.com" });
+    mocks.prisma.user.update.mockResolvedValue({ id: "u1", email: "g@test.com", emailVerified: true });
+    mocks.prisma.session.create.mockResolvedValue({ id: "session-1" });
 
     const result = await googleLogin("good-token");
     expect(result.user).toMatchObject({ id: "u1", email: "g@test.com" });
@@ -60,6 +66,7 @@ describe("googleLogin", () => {
       id: "u2",
       ...args.data,
     }));
+    mocks.prisma.session.create.mockResolvedValue({ id: "session-2" });
 
     const result = await googleLogin("good-token");
     expect(result.user.id).toBe("u2");

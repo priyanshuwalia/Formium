@@ -1,5 +1,5 @@
 {
-  "name": "formbuddy-backend",
+  "name": "formium-backend",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
@@ -31,6 +31,7 @@
     "morgan": "^1.10.0",
     "nanoid": "^5.1.5",
     "prisma": "^6.10.1",
+    "rate-limiter-flexible": "^7.4.0",
     "resend": "^6.28.1",
     "stripe": "^22.6.2",
     "zod": "^4.6.5"

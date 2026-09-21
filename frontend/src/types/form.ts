@@ -16,7 +16,10 @@ export type BlockType =
   export interface User {
   id: string;
   email: string;
-  password: string;
+  emailVerified?: boolean;
+  name?: string;
+  bio?: string;
+  profilePicture?: string;
   forms: Form[];
 }
 
@@ -32,7 +35,6 @@ export type BlockType =
   isPublished: boolean;
   theme?: string;
   successText?: string;
-  coverColor?: string;
   _count?: { responses: number };
 }
 
@@ -45,8 +47,6 @@ export interface FormBlock {
   placeholder?: string;
   required: boolean;
   options?: string[];
-  coverColor?: string;
-  workspaceId?: string;
   logic?: {
     triggerBlockId: string;
     triggerValue: string;

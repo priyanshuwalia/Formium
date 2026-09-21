@@ -5,12 +5,16 @@ import {
   signAccessToken,
   signRefreshToken,
   signPasswordResetToken,
+  signEmailVerifyToken,
+  verifyRefreshToken,
   verifyTokenOfType,
   passwordFingerprint,
 } from "../../utils/tokens.js";
-import { sendPasswordResetEmail } from "../../lib/email.js";
+import { sendPasswordResetEmail, sendVerificationEmail } from "../../lib/email.js";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 /**
  * Expected, safe-to-surface auth failures. Anything that is not an AuthError
@@ -39,23 +43,46 @@ type GoogleUserInfo = {
     sub?: string;
 };
 
-const toAuthResponse = (user: {
+const createSession = (userId: string) => {
+    const id = randomUUID();
+    return prisma.session.create({
+        data: { id, userId, expiresAt: new Date(Date.now() + SESSION_TTL_MS) },
+    });
+};
+
+export const revokeSession = (sessionId?: string) => {
+    if (!sessionId) return Promise.resolve();
+    return prisma.session.updateMany({
+        where: { id: sessionId, revokedAt: null },
+        data: { revokedAt: new Date() },
+    });
+};
+
+const revokeAllSessions = (userId: string) =>
+    prisma.session.updateMany({ where: { userId }, data: { revokedAt: new Date() } });
+
+const toAuthResponse = async (user: {
     id: string;
     email: string;
+    emailVerified: boolean;
     name?: string | null;
     bio?: string | null;
     profilePicture?: string | null;
-}) => ({
-    token: signAccessToken(user.id),
-    refreshToken: signRefreshToken(user.id),
-    user: {
-        id: user.id,
-        email: user.email,
-        name: user.name ?? undefined,
-        bio: user.bio ?? undefined,
-        profilePicture: user.profilePicture ?? undefined,
-    },
-});
+}) => {
+    const session = await createSession(user.id);
+    return {
+        token: signAccessToken(user.id),
+        refreshToken: signRefreshToken(user.id, session.id),
+        user: {
+            id: user.id,
+            email: user.email,
+            emailVerified: user.emailVerified,
+            name: user.name ?? undefined,
+            bio: user.bio ?? undefined,
+            profilePicture: user.profilePicture ?? undefined,
+        },
+    };
+};
 
 const validateCredentials = (email: unknown, password: unknown) => {
     if (typeof email !== "string" || typeof password !== "string" || !email || !password) {
@@ -76,8 +103,15 @@ export const registerUser = async (email: string, password: string) => {
     if (existingUser) throw new AuthError("An account with this email already exists.", 409);
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await prisma.user.create({ data: { email, password: hashedPassword } })
-    return toAuthResponse(user);
+    const user = await prisma.user.create({
+        data: { email, password: hashedPassword, emailVerified: false },
+    });
+
+    const result = await toAuthResponse(user);
+    sendVerificationEmail(user.email, signEmailVerifyToken(user.id, user.password)).catch((err) =>
+        console.error("Verification email failed:", err),
+    );
+    return result;
 };
 
 export const loginUser = async (email: string, password: string) => {
@@ -108,7 +142,16 @@ export const googleLogin = async (accessToken: string) => {
     const userInfo = userInfoRes.ok ? ((await userInfoRes.json()) as GoogleUserInfo) : null;
 
     const existingUser = await prisma.user.findUnique({ where: { email: tokenInfo.email } });
-    if (existingUser) return toAuthResponse(existingUser);
+    if (existingUser) {
+        // Google already verified this email — backfill the flag on the way in.
+        if (!existingUser.emailVerified) {
+            await prisma.user.update({
+                where: { id: existingUser.id },
+                data: { emailVerified: true },
+            });
+        }
+        return toAuthResponse({ ...existingUser, emailVerified: true });
+    }
 
     const password = await bcrypt.hash(`google:${userInfo?.sub ?? randomUUID()}:${randomUUID()}`, 10);
     const user = await prisma.user.create({
@@ -117,6 +160,7 @@ export const googleLogin = async (accessToken: string) => {
             password,
             name: userInfo?.name,
             profilePicture: userInfo?.picture,
+            emailVerified: true,
         },
     });
 
@@ -126,22 +170,26 @@ export const googleLogin = async (accessToken: string) => {
 export const refreshSession = async (refreshToken?: string) => {
     if (!refreshToken) throw new AuthError("Unauthorized", 401);
 
-    const payload = verifyTokenOfType(refreshToken, "refresh");
-    if (!payload) throw new AuthError("Unauthorized", 401);
+    const payload = verifyRefreshToken(refreshToken);
+    if (!payload?.id || !payload.sid) throw new AuthError("Unauthorized", 401);
+
+    const session = await prisma.session.findUnique({ where: { id: payload.sid } });
+    if (
+        !session ||
+        session.userId !== payload.id ||
+        session.revokedAt !== null ||
+        session.expiresAt < new Date()
+    ) {
+        throw new AuthError("Unauthorized", 401);
+    }
 
     const user = await prisma.user.findUnique({ where: { id: payload.id } });
     if (!user) throw new AuthError("Unauthorized", 401);
 
-    return {
-        token: signAccessToken(user.id),
-        user: {
-            id: user.id,
-            email: user.email,
-            name: user.name ?? undefined,
-            bio: user.bio ?? undefined,
-            profilePicture: user.profilePicture ?? undefined,
-        },
-    };
+    // Rotate: the old refresh token is single-use — revoke it and mint a new one.
+    await revokeSession(payload.sid);
+
+    return toAuthResponse(user);
 };
 
 export const requestPasswordReset = async (email: string) => {
@@ -169,5 +217,40 @@ export const resetPassword = async (token: string, password: string) => {
     const hashed = await bcrypt.hash(password, 10);
     await prisma.user.update({ where: { id: user.id }, data: { password: hashed } });
 
+    // A changed password invalidates every outstanding session.
+    await revokeAllSessions(user.id);
+
     return toAuthResponse(user);
+};
+
+export const verifyEmail = async (token: string) => {
+    const payload = verifyTokenOfType(token, "email-verify");
+    if (!payload?.id || !payload.fp) {
+        throw new AuthError("This verification link is invalid or has expired", 400);
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: payload.id } });
+    if (!user || passwordFingerprint(user.password) !== payload.fp) {
+        throw new AuthError("This verification link is invalid or has expired", 400);
+    }
+
+    if (user.emailVerified) return;
+
+    await prisma.user.update({
+        where: { id: user.id },
+        data: { emailVerified: true },
+    });
+};
+
+export const resendVerification = async (email: string) => {
+    const user = await prisma.user.findUnique({ where: { email } });
+    // Always report success to avoid leaking which emails are registered.
+    if (!user || user.emailVerified) return;
+
+    const token = signEmailVerifyToken(user.id, user.password);
+    try {
+        await sendVerificationEmail(user.email, token);
+    } catch (err) {
+        console.error("Failed to resend verification email:", err);
+    }
 };

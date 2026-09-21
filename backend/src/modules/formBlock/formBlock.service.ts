@@ -18,7 +18,23 @@ const withLogic = <T extends { logic?: Prisma.InputJsonValue | null }>(data: T) 
     return { ...rest, logic: logic === null ? Prisma.JsonNull : logic };
 };
 
-export const createFormBlock = async (data: BlockData) => {
+export class FormBlockError extends Error {
+    status: number;
+    constructor(message: string, status = 400) {
+        super(message);
+        this.name = "FormBlockError";
+        this.status = status;
+    }
+}
+
+export const createFormBlock = async (userId: string, data: BlockData) => {
+    const owned = await prisma.form.findFirst({
+        where: { id: data.formId, userId },
+        select: { id: true },
+    });
+    if (!owned) {
+        throw new FormBlockError("Form not found", 404);
+    }
     return await prisma.formBlock.create({ data: withLogic(data) });
 }
 export const getBlocksByFormId = async (formId: string) => {

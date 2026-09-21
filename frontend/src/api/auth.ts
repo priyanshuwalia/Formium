@@ -6,6 +6,7 @@ export type AuthUser = {
   name?: string;
   bio?: string;
   profilePicture?: string;
+  emailVerified?: boolean;
 };
 
 export type AuthResponse = {
@@ -35,3 +36,9 @@ export const forgotPassword = (email: string) =>
 
 export const resetPassword = (token: string, password: string) =>
   API.post("/auth/reset-password", { token, password });
+
+export const verifyEmail = (token: string) =>
+  API.post("/auth/verify-email", { token });
+
+export const resendVerification = (email: string) =>
+  API.post("/auth/resend-verification", { email });

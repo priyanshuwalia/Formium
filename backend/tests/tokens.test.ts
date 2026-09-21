@@ -21,12 +21,16 @@ describe("auth token helpers", () => {
   });
 
   it("signs and verifies a refresh token", () => {
-    const token = signRefreshToken("user-456");
-    expect(verifyRefreshToken(token)).toMatchObject({ id: "user-456", type: "refresh" });
+    const token = signRefreshToken("user-456", "session-456");
+    expect(verifyRefreshToken(token)).toMatchObject({
+      id: "user-456",
+      type: "refresh",
+      sid: "session-456",
+    });
   });
 
   it("rejects a refresh token passed to the access verifier", () => {
-    const refresh = signRefreshToken("user-789");
+    const refresh = signRefreshToken("user-789", "session-789");
     expect(verifyAccessToken(refresh)).toBeNull();
   });
 

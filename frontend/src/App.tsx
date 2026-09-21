@@ -16,6 +16,7 @@ import FormResponses from './pages/FormResponses';
 import ResponseDetails from './pages/ResponseDetails';
 import CompleteProfile from './pages/CompleteProfile';
 import ResetPassword from './pages/auth/ResetPassword';
+import VerifyEmail from './pages/auth/VerifyEmail';
 import EmbedForm from './pages/EmbedForm';
 import ProtectedRoute from './components/ProtectedRoute';
 import HelpPage from './pages/HelpPage';
@@ -36,6 +37,7 @@ function App() {
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
             <Route path='/reset-password' element={<ResetPassword />} />
+            <Route path='/verify-email' element={<VerifyEmail />} />
 
             <Route element={<ProtectedRoute />}>
               <Route path='/complete-profile' element={<CompleteProfile />} />

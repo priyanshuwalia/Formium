@@ -26,7 +26,7 @@ export const createResponseHandler = async (req: Request, res: Response) => {
 export const getResponsesHandler = async (req: Request, res: Response) => {
     try {
         const { formId } = req.params;
-        const responses = await ResponseService.getResponseByForm(formId);
+        const responses = await ResponseService.getResponseByForm(formId, req.user.id);
         res.json(responses);
     } catch (err) {
         handleError(res, err, "Fetch responses");
@@ -36,11 +36,7 @@ export const getResponsesHandler = async (req: Request, res: Response) => {
 export const getResponseHandler = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const response = await ResponseService.getResponseById(id);
-        if (!response) {
-            res.status(404).json({ error: "Response not found" });
-            return;
-        }
+        const response = await ResponseService.getResponseById(id, req.user.id);
         res.json(response);
     } catch (err) {
         handleError(res, err, "Fetch response");

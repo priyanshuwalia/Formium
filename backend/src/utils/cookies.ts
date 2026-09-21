@@ -1,5 +1,4 @@
 import { Response } from "express";
-import { signAccessToken, signRefreshToken } from "./tokens.js";
 
 export const ACCESS_COOKIE = "formium_access";
 export const REFRESH_COOKIE = "formium_refresh";
@@ -15,10 +14,7 @@ export const cookieOptions = () => ({
   path: "/",
 });
 
-export const setAuthCookies = (res: Response, userId: string) => {
-  const access = signAccessToken(userId);
-  const refresh = signRefreshToken(userId);
-
+export const setAuthCookies = (res: Response, access: string, refresh: string) => {
   res.cookie(ACCESS_COOKIE, access, {
     ...cookieOptions(),
     maxAge: 15 * 60 * 1000,
@@ -27,8 +23,6 @@ export const setAuthCookies = (res: Response, userId: string) => {
     ...cookieOptions(),
     maxAge: 30 * 24 * 60 * 60 * 1000,
   });
-
-  return { access, refresh };
 };
 
 export const clearAuthCookies = (res: Response) => {
